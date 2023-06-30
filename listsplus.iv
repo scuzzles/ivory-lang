@@ -1,0 +1,20 @@
+$ list append appends content to a list
+function listappend [ appendvar newcontent ] py FindVar("appendvar").append(FindVar("newcontent")) ; 
+
+$ deletes a value from a list
+function listdelete [ appendvar contentindexval ] py FindVar("appendvar").pop(int(FindVar("contentindexval"))) ;
+
+$ gets a value from a list by index
+function listval [ listvar listindexvalue ] var foundval = py FindVar("listvar")[int(FindVar("listindexvalue"))] ; return foundval ;
+
+$ finds the index of a specific list value 
+function getval [ listvar listvalue ] var foundindex = py FindVar("listvar").index(FindVar("listvalue")) ; return foundindex ; 
+
+$ splits a string into a list of the words in that list
+function listsplit [ stringvar ] var thenewlist = py FindVar("stringvar").split(sep=None) ; return thenewlist ;
+
+$ joins a list with a specific seperator
+function listjoin [ seperator joininglist ] var theval = py FindVar("seperator").join(FindVar("joininglist")) ; return theval ;
+
+$ joins a list with no seperators, (list becomes string)
+function listjoin_blank [ joininglist ] var theval = py " ".join(FindVar("joininglist")) ; return theval ;

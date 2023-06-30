@@ -1,0 +1,15 @@
+function open [ open_file_path method ] var new_return = py open(FindVar("open_file_path"), FindVar("method")) ; return new_return ;
+function open_lines [ open_file_path method ] var new_return_lines = py open(FindVar("open_file_path"), FindVar("method")).readlines() ; return new_return_lines ;
+function read_file [ desired_file ] var theval = py FindVar("desired_file").read() ; return theval ;
+function open_read [ open_file_path method ] var new_return = py open(FindVar("open_file_path"), FindVar("method")).read() ; return new_return ;
+function add_int [ NUM1 op num2 ] var RESULT = py int(FindVar("NUM1")) + int(FindVar("num2")) ; return RESULT ;
+function sub_int [ NUM1 op num2 ] var RESULT = py int(FindVar("NUM1")) - int(FindVar("num2")) ; return RESULT ;
+function div_int [ NUM1 op num2 ] var RESULT = py int(FindVar("NUM1")) / int(FindVar("num2")) ; return RESULT ;
+function product_int [ NUM1 op num2 ] var RESULT = py int(FindVar("NUM1")) * int(FindVar("num2")) ; return RESULT ;
+function add_float [ NUM1 op num2 ] var RESULT = py float(FindVar("NUM1")) + float(FindVar("num2")) ; return RESULT ;
+function sub_float [ NUM1 op num2 ] var RESULT = py float(FindVar("NUM1")) - float(FindVar("num2")) ; return RESULT ;
+function div_float [ NUM1 op num2 ] var RESULT = py float(FindVar("NUM1")) / float(FindVar("num2")) ; return RESULT ;
+function product_float [ NUM1 op num2 ] var RESULT = py float(FindVar("NUM1")) * float(FindVar("num2")) ; return RESULT ;
+function write [ filevar contents ] py FindVar("filevar").write(FindVar("contents")) ;  
+function round [ number round_place ] var RESULT = py round(float(FindVar("number")), int(FindVar("round_place"))) ; return RESULT ;
+function square_int [ NUMBER ] var RESULT = py int(FindVar("NUMBER")) ** 2 ; return RESULT ;
