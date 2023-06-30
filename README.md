@@ -52,3 +52,15 @@ The final thing I will discuss here is again related to variable names. You may 
 ```
 var ())=-\< = " hello "
 print ())=-\<
+```
+RESULT:
+```
+hello
+```
+This code works because Ivory does not check individual characters, in fact ivory completely ignores any line that does not start with an instruction. This means that you can name your variables just about anything you want to.
+
+## Proper documentation
+Although I have jammed a lot of information into this readme page, there is more information [here](https://ivory.itzscuzzles.repl.co/Documentation.html)
+
+## installation
+Despite a lot of programming languages having fairly complicated installations, ivory is quite simple. Just install this repository as a zip file or click here for the website and click download, this gives you access to downloads of all of the previous versions of ivory. ***PLEASE NOTE*** it is required that you have python version 3 installed in order to use ivory, this allows for ivory to be downloadable on all operating systems with the only variation being python.
