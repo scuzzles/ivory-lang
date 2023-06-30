@@ -537,6 +537,7 @@ def Iimportfrom(Line):
 def Iimport(Line):
     LineValues = Line.split(sep=None)
     ImportContent = open(f"{LineValues[1]}.iv", "r").readlines()
+    required = []
     for ImportedLine in ImportContent:
         SplitLine = ImportedLine.split(sep=None)
 
@@ -545,8 +546,92 @@ def Iimport(Line):
         elif SplitLine[0] == "function":
             inprogramfunctions.append(SplitLine[1])
             functionsmem.append(ImportedLine)
+            if "sequence.use" in SplitLine:
+                using_sequence = SplitLine.index("sequence.use")
+                required.append(SplitLine[using_sequence + 1])
         else:
             pass
+    for NewLine in ImportContent:
+        if NewLine.startswith("sequence"):
+            #print(NewLine)
+            if NewLine.startswith("sequence.use"):
+                pass
+            else:
+                SeqValues = NewLine.split(sep=None)
+                SplitLine = NewLine.split(sep=None)
+                if SplitLine[1] in required:
+                    inprogramsequences.append(SeqValues[1])
+                    
+                    if SeqValues[2] != "{":
+                        sequencesmem.append(NewLine)
+                    if SeqValues[2] == "{":
+                        seqLine = ImportContent.index(NewLine)
+                        #print(seqLine)
+                        MakeProcess("filecopy", ImportContent)
+                        filecopy = LoadProcess("filecopy")
+                        for x in range(0, seqLine):
+
+                            filecopy.pop(0)
+                        #print(filecopy)
+                        try:
+                            endofseq = filecopy.index("}\n")
+                            #print(endofseq)
+                            for x in range(1, len(filecopy)):
+                                nextseq = len(filecopy) + 20
+                                if filecopy[x].startswith("sequence.use"):
+                                    pass
+                                elif filecopy[x].startswith("sequence"):
+                                    nextseq = x
+                                    break
+                            #print(f"next: {nextseq}")
+                            #print(f"end: {endofseq}")
+                            if nextseq < endofseq:
+                                #print(nextseq)
+                                print("SYNTAX ERROR: Make sure the end of your sequence does not have spaces")
+                                print("example: \"}    \"")
+                                sys.exit(1)
+                        except ValueError:
+
+                            try:
+                                endofseq = filecopy.index("}")
+                                #print(endofseq)
+                                for x in range(1, len(filecopy)):
+                                    nextseq = len(filecopy) + 20
+                                    if filecopy[x].startswith("sequence.use"):
+                                        pass
+                                    elif filecopy[x].startswith("sequence"):
+                                        nextseq = x
+                                        break
+                                #print(f"next: {nextseq}")
+                                #print(f"end: {endofseq}")
+                                if nextseq < endofseq:
+                                    print("SYNTAX ERROR: Make sure the end of your sequence does not have spaces")
+                                    print("example: \"}    \"")
+                                    sys.exit(1)
+                            except ValueError:
+                                print("SYNTAX ERROR: Make sure the end of your sequence does not have spaces")
+                                print("example: \"}    \"")
+                                sys.exit(1)
+                        for d in range(ImportContent.index(NewLine) + 1, ImportContent.index(filecopy[endofseq - 1]) + 1):
+                            ImportContent.pop(ImportContent.index(NewLine) + 1)
+                        for fd in range(endofseq, len(filecopy)):
+                            filecopy.pop(endofseq)
+                        filecopylist = []
+                        for value in filecopy:
+                            if value == "}":
+                                new = value
+                            else:
+                                new = value.split(sep=None)
+                            new = " ".join(new)
+                            filecopylist.append(new)
+                            filecopylist.append(";")
+                        filecopylist = " ".join(filecopylist)
+                        filecopylist = filecopylist.split(sep=None)
+                        filecopylist.pop(2)
+                        filecopylist.pop(2)
+                        sequencesmem.append(" ".join(filecopylist))
+        # This finds sequences and imports them to be used in functions
+        
         
 
 # sequence seq_name print " hello there " ; var cool = input what is your name? %} {% print v" hello there { cool } " ;
@@ -1781,15 +1866,13 @@ def execute(Content):
             if Line.startswith("sequence.use"):
                 pass
             else:
-                #print("fsdfsdfsdfsdfsd")
+
                 SplitLine = Line.split(sep=None)
                 inprogramsequences.append(LineValues[1])
                 
                 if LineValues[2] != "{":
                     sequencesmem.append(Line)
                 if LineValues[2] == "{":
-                    #print("AAAAAA")
-                    
                     seqLine = Content.index(Line)
                     #print(seqLine)
                     MakeProcess("filecopy", Content)
@@ -1816,7 +1899,7 @@ def execute(Content):
                             print("example: \"}    \"")
                             sys.exit(1)
                     except ValueError:
-                        #print("OKAY BUD")
+
                         try:
                             endofseq = filecopy.index("}")
                             #print(endofseq)
