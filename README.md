@@ -64,3 +64,46 @@ Although I have jammed a lot of information into this readme page, there is more
 
 ## installation
 Despite a lot of programming languages having fairly complicated installations, ivory is quite simple. Just install this repository as a zip file or [click here](https://ivory.itzscuzzles.repl.co/ivory.html) for the website and click download, this gives you access to downloads of all of the previous versions of ivory. ***PLEASE NOTE*** it is required that you have python version 3 installed in order to use ivory, this allows for ivory to be downloadable on all operating systems with the only variation being python.
+
+# more documentation
+## sequences
+when you are programming it is important to be able to execute a sequence or block of code under a certain circumstance, for instance maybe you use an if statement and you need to execute more than one line of code. In ivory instead of writing this under or inside of the if statement, you write it seperately in it's own sequence and then call the sequence in the if statement. Here is a basic example:
+```
+sequence normal_response {
+print v" hello there %{ name } "
+print " welcome to (app name) "
+}
+
+sequence admin_response {
+print " hello admin user "
+print " your list of commands is ... "
+}
+
+var name = input " enter your name here: "
+
+if name == " admin " {{ sequence.use admin_response }}
+else {{ sequence.use normal_response }}
+```
+RESULT: 
+```
+enter your name here:admin
+hello admin user
+your list of commands is ...
+```
+do note that it is impossible to write a program like this without first declaring a sequence and then using the sequence in your if statement. This is annoying and can occasionally get confusing but after you spend probably 10 minutes learning it you get used to it and can do it without thinking
+
+## importing modules
+in ivory, all you have to do to import a module is have the .iv file for it saved in the same folder as your ivory interpreter and file. An exmaple of a module is the "listsplus" module that comes with ivory to make lists much easier to use. Here is an example of how you could use it
+```
+import listsplus
+
+var example = list [ " this is the first value " ] [ " this is the second value " ] 
+print example
+listappend example " this is the third value " 
+print example
+```
+RESULT: 
+```
+['this is the first value', 'this is the second value']
+['this is the first value', 'this is the second value', 'this is the third value']
+```
