@@ -753,7 +753,12 @@ def Ifunction(Line):
                 LineValues.pop(0)
                 MakeProcess("currentvar", LineValues)
                 currentvar = LoadProcess("currentvar")
-                endofcurrentvar = currentvar.index("\"")
+                try:
+                    endofcurrentvar = currentvar.index("\"")
+                except ValueError:   
+                    ELine = Line
+                    print(f"ERROR Line: {Line} | SYNTAX ERROR | Missing required \" at end of statement")
+                    sys.exit(1)     
                 for v in range(endofcurrentvar, len(currentvar)):
                     currentvar.pop(endofcurrentvar)
                 SaveVar(var, " ".join(currentvar))
@@ -1584,15 +1589,6 @@ def variable(Line):
         SaveVar(LineValues[0], thevstring)
     # print(LineValues)
     # print(LineValues[2])
-    if LineValues[2] == "input":
-        # if LineValues.index("input") == 2:
-        varname = LineValues[0]
-        SplitLine = Line.split(sep=None)
-        for x in range(0, 3):
-            SplitLine.pop(0)
-        NewLine = " ".join(SplitLine)
-        inp = input(NewLine)
-        SaveVar(varname, inp)
     if LineValues[2] == "sub":
         SplitLine = Line.split(sep=None)
         SplitLine.pop(0)
