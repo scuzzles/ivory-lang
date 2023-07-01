@@ -107,3 +107,4 @@ RESULT:
 ['this is the first value', 'this is the second value']
 ['this is the first value', 'this is the second value', 'this is the third value']
 ```
+You may have noticed that the way the list was coded and the way it printed are very different. This is because python is printing the lists and it prints them differently because it view lists in a different manner, **do not try to create a list the way that you do in most languages**, it will not work in ivory.
