@@ -1,16 +1,82 @@
 function open [ open_file_path__ method__ ] var new_return__ = py open(FindVar("open_file_path__"), FindVar("method__")) ; return new_return__ ;
+$ opens a file to be used
+$ open " file.txt " " r "
+
 function open_lines [ open_file_path__ method__ ] var new_return_lines__ = py open(FindVar("open_file_path__"), FindVar("method__")).readlines() ; return new_return_lines__ ;
+$ opens a file and puts each line into a list
+$ open_lines " file.txt " " r "
+
 function read_file [ desired_file__ ] var theval__ = py FindVar("desired_file__").read() ; return theval__ ;
+$ opens a file to be read
+$ read_file " file.txt "
+
 function open_read [ open_file_path method ] var new_return = py open(FindVar("open_file_path"), FindVar("method")).read() ; return new_return ;
-function add_int [ NUM1__ op__ num2__ ] var RESULT = py int(FindVar("NUM1__")) + int(FindVar("num2__")) ; return RESULT ;
-function sub_int [ NUM1__ op__ num2__ ] var RESULT = py int(FindVar("NUM1__")) - int(FindVar("num2__")) ; return RESULT ;
-function div_int [ NUM1__ op__ num2__ ] var RESULT = py int(FindVar("NUM1__")) / int(FindVar("num2__")) ; return RESULT ;
-function product_int [ NUM1__ op__ num2__ ] var RESULT = py int(FindVar("NUM1__")) * int(FindVar("num2__")) ; return RESULT ;
-function add_float [ NUM1__ op__ num2__ ] var RESULT = py float(FindVar("NUM1__")) + float(FindVar("num2__")) ; return RESULT ;
-function sub_float [ NUM1__ op__ num2__ ] var RESULT = py float(FindVar("NUM1__")) - float(FindVar("num2__")) ; return RESULT ;
-function div_float [ NUM1__ op__ num2__ ] var RESULT = py float(FindVar("NUM1__")) / float(FindVar("num2__")) ; return RESULT ;
-function product_float [ NUM1__ op__ num2__ ] var RESULT = py float(FindVar("NUM1__")) * float(FindVar("num2__")) ; return RESULT ;
+$ opens and then reads a file
+$ open_read " file.txt " " r "
+
+function add_int [ NUM1__ op__ num2__ ] var RESULT__ = py int(FindVar("NUM1__")) + int(FindVar("num2__")) ; return RESULT__ ;
+$ adds two integer numbers and returns integer value
+$ add_int " 2 " + " 3 "
+
+function sub_int [ NUM1__ op__ num2__ ] var RESULT__ = py int(FindVar("NUM1__")) - int(FindVar("num2__")) ; return RESULT__ ;
+$ subtracts two integer numbers and returns integer value
+$ sub_int " 7 " - " 2 "
+
+function div_int [ NUM1__ op__ num2__ ] var RESULT__ = py int(FindVar("NUM1__")) / int(FindVar("num2__")) ; return RESULT__ ;
+$ divides two integer numbers and returns integer value
+$ div_int " 10 " / " 2 "
+
+function product_int [ NUM1__ op__ num2__ ] var RESULT__ = py int(FindVar("NUM1__")) * int(FindVar("num2__")) ; return RESULT__ ;
+$ multiplies two integer numbers and returns integer value
+$ product_int " 5 " * " 2 "
+
+function add_float [ NUM1__ op__ num2__ ] var RESULT__ = py float(FindVar("NUM1__")) + float(FindVar("num2__")) ; return RESULT__ ;
+$ adds two numbers and returns float value
+add_float " 2 " + " 3 "
+
+function sub_float [ NUM1__ op__ num2__ ] var RESULT__ = py float(FindVar("NUM1__")) - float(FindVar("num2__")) ; return RESULT__ ;
+$ subtracts two numbers and returns float value
+sub_float " 7 " - " 2 "
+
+function div_float [ NUM1__ op__ num2__ ] var RESULT__ = py float(FindVar("NUM1__")) / float(FindVar("num2__")) ; return RESULT__ ;
+$ divides two numbers and returns float value
+div_float " 10 " / " 2 "
+
+function product_float [ NUM1__ op__ num2__ ] var RESULT__ = py float(FindVar("NUM1__")) * float(FindVar("num2__")) ; return RESULT__ ;
+$ multiplies two numbers and returns float value
+product_float  " 2.5 " * " 2 "
+
 function write [ filevar__ contents__ ] py FindVar("filevar__").write(FindVar("contents__")) ;  
+
+
 function round [ number__ round_place__ ] var RESULT__ = py round(float(FindVar("number__")), int(FindVar("round_place__"))) ; return RESULT__ ;
+
+
 function square_int [ NUMBER__ ] var RESULT__ = py int(FindVar("NUMBER__")) ** 2 ; return RESULT__ ;
+
+
 function input [ PROMPT__ ] var USERINPUT__ = py input(FindVar("PROMPT__")) ; return USERINPUT__ ;
+
+
+
+
+sequence math_seq_int {
+if op__ == + {{ var RESULT__ = add_int NUM1__ + num2__ }}
+if op__ == - {{ var RESULT__ = sub_int NUM1__ - num2__ }}
+if op__ == * {{ var RESULT__ = product_int NUM1__ * num2__ }}
+if op__ == / {{ var RESULT__ = div_int NUM1__ / num2__ }}
+if op__ == ** {{ var RESULT__ = py int(FindVar("NUM1__")) ** int(FindVar("num2__")) }}
+}
+
+sequence math_seq_float {
+if op__ == + {{ var RESULT__ = add_float NUM1__ + num2__ }}
+if op__ == - {{ var RESULT__ = sub_float NUM1__ - num2__ }}
+if op__ == * {{ var RESULT__ = product_float NUM1__ * num2__ }}
+if op__ == / {{ var RESULT__ = div_float NUM1__ / num2__ }}
+if op__ == ** {{ var RESULT__ = py float(FindVar("NUM1__")) ** float(FindVar("num2__")) }}
+}
+
+
+function math [ NUM1__ op__ num2__ ] sequence.use math_seq_int ; return RESULT__ ;
+
+function math_float [ NUM1__ op__ num2__ ] sequence.use math_seq_float ; return RESULT__ ;
