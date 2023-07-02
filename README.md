@@ -59,8 +59,8 @@ hello
 ```
 This code works because Ivory does not check individual characters, in fact ivory completely ignores any line that does not start with an instruction. This means that you can name your variables just about anything you want to.
 
-## More documentation
-Although I have jammed a lot of information into this readme page, there are some things I left out that will be [here](https://ivory.itzscuzzles.repl.co/Documentation.html)
+## module documentation/example code
+If you want documentation on how to use some of the modules for ivory, or if you want to see some projects built with ivory, look [here](https://ivory.itzscuzzles.repl.co/Documentation.html)
 
 ## installation and use
 ### installation
