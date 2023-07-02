@@ -59,11 +59,14 @@ hello
 ```
 This code works because Ivory does not check individual characters, in fact ivory completely ignores any line that does not start with an instruction. This means that you can name your variables just about anything you want to.
 
-## Proper documentation
-Although I have jammed a lot of information into this readme page, there is more information [here](https://ivory.itzscuzzles.repl.co/Documentation.html)
+## More documentation
+Although I have jammed a lot of information into this readme page, there are some things I left out that will be [here](https://ivory.itzscuzzles.repl.co/Documentation.html)
 
-## installation
+## installation and use
+### installation
 Despite a lot of programming languages having fairly complicated installations, ivory is quite simple. Just install this repository as a zip file or [click here](https://ivory.itzscuzzles.repl.co/ivory.html) for the website and click download, this gives you access to downloads of all of the previous versions of ivory. ***PLEASE NOTE*** it is required that you have python version 3 installed in order to use ivory, this allows for ivory to be downloadable on all operating systems with the only variation being python.
+### use
+To use ivory all you need to do is write code into a .iv file in the same directory as the ivory.py interpreter. Then you will run the interpreter and type the name of the file your code is in, do not include .iv at the end; for instance, if you are coding the the main.iv file, when you are prompted for the name you will type "main"
 
 # more documentation
 ## sequences
@@ -108,3 +111,24 @@ RESULT:
 ['this is the first value', 'this is the second value', 'this is the third value']
 ```
 You may have noticed that the way the list was coded and the way it printed are very different. This is because python is printing the lists and it prints them differently because it view lists in a different manner, **do not try to create a list the way that you do in most languages**, it will not work in ivory.
+
+## math
+Since ivory ignores all lines that do not have a direct instruction, you need to use a math function in order to do any math. There are two ways you can do this. If you do not need to input float numbers or numbers with a decimal then you can just use the math function. Here is an example
+
+```
+var number = math " 10 " + " 10 "
+print number
+```
+RESULT:
+```
+20
+```
+Although this does work in a lot of cases, sometimes you need to include a decimal in your input, for this you will use math_float
+```
+var number = math_float " 4.3 " - " 1.2 "
+print number
+```
+RESULT:
+```
+3.1
+```
