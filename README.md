@@ -256,3 +256,45 @@ RESULT:
 ['this', 'is', 'a', 'list']
 this is a list
 ```
+### basic examples
+listappend:
+```
+listappend list " this gets appended "
+```
+appends to a list titled "list"
+
+listdelete:
+```
+listdelete list_variable " 2 "
+```
+deletes the third value from a list titled "list_variable"
+
+listval:
+```
+listval cool_list " 1 "
+```
+returns the second value of a list named "cool_list"
+
+getval:
+```
+getval aList " jerry "
+```
+returns the index value of "jerry" in list "aList"
+
+listsplit:
+```
+listsplit theString
+```
+this will return a value of "theString" that has been split into a list.
+
+listjoin:
+```
+listjoin "," theList
+```
+this will return a value of "theList" that has been joined into a string, seperated by commas.
+
+listjoin_blank:
+```
+listjoin_blank theList
+```
+this will return a version of "theList" that has been joined into a string and is seperated by spaces.
