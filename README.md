@@ -132,3 +132,127 @@ RESULT:
 ```
 3.1
 ```
+## the py function
+Because ivory is a really basic programming language and doesn't really have a community, some things that would be easy in other programming languages isn't possible. Because of this I have added a py function, this uses python's "eval()" function to execute one python function, meaning you can essentially write python inside of ivory. Here is an example.
+```
+py i.time.sleep(1)
+```
+This will cause the program to wait 1 second before completing the next task, but in order to use this you need the python time module. Because of this issue, I added a blank file, Ivory_imports.py, any python module or library imported into this file will automatically be imported into the ivory interpreter as i, so the time module is typed "i.time"
+## lists
+although the listsplus module has already been mentioned, it is important to know how to use it because it is the primary and best method for list manipulation.
+I will start with simply creating and using lists. To create a list you will need to clarify that what you are doing is creating a list. Here is how you can do that.
+```
+import listsplus
+
+var mylist = list [ " value 1 " ] [ " value 2 " ] [ " value 3 " ]
+print mylist
+```
+RESULT:
+```
+['value 1', 'value 2', 'value 3']
+```
+**Do not** forget when creating a list that you need to type "list" before typing out the actual list.
+### appending to a list
+Next is how to append to a list. To do this you will use the "listappend" function
+```
+import listsplus
+
+var mylist = list [ " value 1 " ] [ " value 2 " ] [ " value 3 " ]
+print mylist
+listappend mylist " value 4 "
+print mylist
+```
+RESULT:
+```
+['value 1', 'value 2', 'value 3']
+['value 1', 'value 2', 'value 3', 'value 4']
+```
+### removing items from a list
+To remove items from a list you will need to use the "listdelete" function. Here is how you would do that.
+```
+import listsplus
+
+var mylist = list [ " value 1 " ] [ " value 2 " ] [ " value 3 " ]
+print mylist
+listdelete mylist " 1 "
+print mylist
+```
+RESULT:
+``` 
+['value 1', 'value 2', 'value 3']
+['value 1', 'value 3']
+```
+### list values
+in order to get a specific value from a list using a number you will need to use the "listval" function. Here is an example:
+```
+import listsplus
+
+var mylist = list [ " value 1 " ] [ " value 2 " ] [ " value 3 " ]
+print mylist
+var 2nd = listval mylist " 1 "
+print 2nd
+```
+RESULT:
+```
+['value 1', 'value 2', 'value 3']
+value 2
+```
+### indexing a list
+If you are trying to index a list, you will use the "getval" function, here is an example of how to do this:
+```
+import listsplus
+
+var mylist = list [ " value 1 " ] [ " value 2 " ] [ " value 3 " ]
+print mylist
+var val2 = getval mylist " value 2 "
+print val2
+```
+RESULT:
+```
+['value 1', 'value 2', 'value 3']
+1
+```
+### splitting a list
+Sometimes it can be useful to split a string into a list of all the words in that string, to do this in ivory you will use the "listsplit" function
+```
+import listsplus
+
+var string = " this is a string "
+print string
+var thelist = listsplit string
+print thelist
+```
+RESULT:
+```
+this is a string
+['this', 'is', 'a', 'string']
+```
+### joining a list
+joining a list into a string is very useful in some cases, it is a majority of how ivory was built. To join a list you will use the "listjoin" function
+```
+import listsplus
+
+var thelist = list [ " this " ] [ " is " ] [ " a " ] [ " list " ]
+print thelist
+var thestring = listjoin " , " thelist
+print thestring
+```
+RESULT:
+```
+['this', 'is', 'a', 'list']
+this,is,a,list
+```
+If you wanted to join a list and seperate it with spaces you would need to use the "listjoin_blank" function. Here is how you could do that:
+```
+import listsplus
+
+var thelist = list [ " this " ] [ " is " ] [ " a " ] [ " list " ]
+print thelist
+var thestring = listjoin_blank thelist
+print thestring
+```
+RESULT:
+```
+['this', 'is', 'a', 'list']
+this is a list
+```
