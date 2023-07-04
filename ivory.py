@@ -536,7 +536,15 @@ def Iimportfrom(Line):
             pass
 def Iimport(Line):
     LineValues = Line.split(sep=None)
-    ImportContent = open(f"{LineValues[1]}.iv", "r").readlines()
+    try:
+        ImportContent = open(f"{LineValues[1]}.iv", "r").readlines()
+    except FileNotFoundError:
+        try:
+            ImportContent = open(f"modules/{LineValues[1]}.iv", "r").readlines()
+        except FileNotFoundError:
+            linenum = Content.index(Line) + 1
+            print(f"ERROR IN LINE({linenum}): IMPORT ERROR | Could not find module \"{LineValues[1]}\"")
+            sys.exit(1)
     required = []
     for ImportedLine in ImportContent:
         SplitLine = ImportedLine.split(sep=None)
@@ -549,6 +557,8 @@ def Iimport(Line):
             if "sequence.use" in SplitLine:
                 using_sequence = SplitLine.index("sequence.use")
                 required.append(SplitLine[using_sequence + 1])
+        elif SplitLine[0] == "import":
+            Iimport(f"import {SplitLine[1]}")
         else:
             pass
     for NewLine in ImportContent:
@@ -740,42 +750,77 @@ def Ifunction(Line):
     SplitLine.pop(0)
     SplitLine.pop(0)
     SplitLine.pop(0)
-    endofvars = SplitLine.index("]")
-    MakeProcess("varline", SplitLine)
-    varline = LoadProcess("varline")
 
-    for z in range(endofvars, len(varline)):
-        varline.pop(endofvars)
-    LineValues.pop(0)
-    for var in varline:
-        try:
-            if LineValues[0] == "\"":
-                LineValues.pop(0)
-                MakeProcess("currentvar", LineValues)
-                currentvar = LoadProcess("currentvar")
-                try:
-                    endofcurrentvar = currentvar.index("\"")
-                except ValueError:   
-                    ELine = Line
-                    print(f"ERROR Line: {Line} | SYNTAX ERROR | Missing required \" at end of statement")
-                    sys.exit(1)     
-                for v in range(endofcurrentvar, len(currentvar)):
-                    currentvar.pop(endofcurrentvar)
-                SaveVar(var, " ".join(currentvar))
-                for value in currentvar:
-                    LineValues.pop(0)
-                LineValues.pop(0)
-            else:
-                SaveVar(var, FindVar(LineValues[0]))
-                LineValues.pop(0)
-        except IndexError:
-            for L in Content:
-                if Line in L:
-                    linenum = Content.index(L) + 1
-            print(f"ERROR IN LINE({linenum}): SYNTAX ERROR | Missing required values in the \"{Line.split(sep=None)[0]}\" function")
-            sys.exit(1)
+    if SplitLine[0] == "...":
+        listofvars = []
+        
+        
+        templine = list(LineValues)
+        templine.pop(0)
 
+
+        while len(templine) > -1:
+
+            try:
+                if templine[0] == "\"":
+                    templine.pop(0)
+                    endofquote = templine.index("\"")
+                    appendLine = list(templine)
+                    #aL is for "appendLine" but I was lazy so instead I'm doing more work and typing this
+                    aL = len(appendLine)
+                    for x in range(endofquote, aL):
+                        appendLine.pop(endofquote)
+                    listofvars.append(" ".join(appendLine))
+                    for value in appendLine:
+                        templine.pop(0)
+                    templine.pop(0)
+                else:
+                    thevalue = FindVar(templine[0])
+                    templine.pop(0)
+                    listofvars.append(thevalue)
+
+            except IndexError:
+                break
+        SaveVar("...", listofvars)
         SplitLine.pop(0)
+
+    else:
+        endofvars = SplitLine.index("]")
+        MakeProcess("varline", SplitLine)
+        varline = LoadProcess("varline")
+
+        for z in range(endofvars, len(varline)):
+            varline.pop(endofvars)
+        LineValues.pop(0)
+        for var in varline:
+            try:
+                if LineValues[0] == "\"":
+                    LineValues.pop(0)
+                    MakeProcess("currentvar", LineValues)
+                    currentvar = LoadProcess("currentvar")
+                    try:
+                        endofcurrentvar = currentvar.index("\"")
+                    except ValueError:   
+                        ELine = Line
+                        print(f"ERROR Line: {Line} | SYNTAX ERROR | Missing required \" at end of statement")
+                        sys.exit(1)     
+                    for v in range(endofcurrentvar, len(currentvar)):
+                        currentvar.pop(endofcurrentvar)
+                    SaveVar(var, " ".join(currentvar))
+                    for value in currentvar:
+                        LineValues.pop(0)
+                    LineValues.pop(0)
+                else:
+                    SaveVar(var, FindVar(LineValues[0]))
+                    LineValues.pop(0)
+            except IndexError:
+                for L in Content:
+                    if Line in L:
+                        linenum = Content.index(L) + 1
+                print(f"ERROR IN LINE({linenum}): SYNTAX ERROR | Missing required values in the \"{Line.split(sep=None)[0]}\" function")
+                sys.exit(1)
+
+            SplitLine.pop(0)
     SplitLine.pop(0)
     linevalues = SplitLine.count(";")
     for x in range(0, linevalues):
@@ -804,9 +849,9 @@ def Ifunction(Line):
             if currentline[0] == "\"":
                 currentline.pop(0)
                 currentline.pop(len(currentline) - 1)
-                SaveVar(f"{PureList[1]}_return_val", " ".join(currentline))
+                SaveVar(f"{PureList[1]}_return_val__", " ".join(currentline))
             else:
-                SaveVar(f"{PureList[1]}_return_val", FindVar(currentline[0]))
+                SaveVar(f"{PureList[1]}_return_val__", FindVar(currentline[0]))
 
         SplitLine.pop(0)
 
@@ -1142,9 +1187,9 @@ def Iif(Line):
                     if currentline[0] == "\"":
                         currentline.pop(0)
                         currentline.pop(len(currentline) - 1)
-                        SaveVar(f"{PureList[1]}_return_val", " ".join(currentline))
+                        SaveVar(f"{PureList[1]}_return_val__", " ".join(currentline))
                     else:
-                        SaveVar(f"{PureList[1]}_return_val", FindVar(currentline[0]))
+                        SaveVar(f"{PureList[1]}_return_val__", FindVar(currentline[0]))
                 MakeProcess("ifval", "true")
                 return True
                 
@@ -1171,9 +1216,9 @@ def Iif(Line):
                     if currentline[0] == "\"":
                         currentline.pop(0)
                         currentline.pop(len(currentline) - 1)
-                        SaveVar(f"{PureList[1]}_return_val", " ".join(currentline))
+                        SaveVar(f"{PureList[1]}_return_val__", " ".join(currentline))
                     else:
-                        SaveVar(f"{PureList[1]}_return_val", FindVar(currentline[0]))
+                        SaveVar(f"{PureList[1]}_return_val__", FindVar(currentline[0]))
 
 # if " 12 " > var {{ print " test " }}
     elif "!=" in LineValues:
@@ -1224,9 +1269,9 @@ def Iif(Line):
                     if currentline[0] == "\"":
                         currentline.pop(0)
                         currentline.pop(len(currentline) - 1)
-                        SaveVar(f"{PureList[1]}_return_val", " ".join(currentline))
+                        SaveVar(f"{PureList[1]}_return_val__", " ".join(currentline))
                     else:
-                        SaveVar(f"{PureList[1]}_return_val", FindVar(currentline[0]))
+                        SaveVar(f"{PureList[1]}_return_val__", FindVar(currentline[0]))
                 MakeProcess("ifval", "true")
                 return True
             else: 
@@ -1252,9 +1297,9 @@ def Iif(Line):
                     if currentline[0] == "\"":
                         currentline.pop(0)
                         currentline.pop(len(currentline) - 1)
-                        SaveVar(f"{PureList[1]}_return_val", " ".join(currentline))
+                        SaveVar(f"{PureList[1]}_return_val__", " ".join(currentline))
                     else:
-                        SaveVar(f"{PureList[1]}_return_val", FindVar(currentline[0]))
+                        SaveVar(f"{PureList[1]}_return_val__", FindVar(currentline[0]))
     elif ">" in LineValues:
         SplitLine.pop(0)
         if SplitLine[0] == "\"":
@@ -1572,134 +1617,136 @@ def Iprint(Line):
 
 def variable(Line):
     LineValues = Line.split(sep=None)
-
-    if LineValues[2] == "\"":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        endofline = len(SplitLine) - 1
-        SplitLine.pop(endofline)
-        SaveVar(LineValues[0], " ".join(SplitLine))
-    if LineValues[2] == "v\"":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        thevstring = vString(" ".join(SplitLine))
-        SaveVar(LineValues[0], thevstring)
-    # print(LineValues)
-    # print(LineValues[2])
-    if LineValues[2] == "sub":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SaveVar(LineValues[0], Sub(" ".join(SplitLine)))
-# bruh = sub= num -= 10
-    if LineValues[2] == "add":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SaveVar(LineValues[0], add(" ".join(SplitLine)))
-    if LineValues[2] == "load_file":
-        coolLine = Line.split(sep=None)
-        SplitLine = Line.split(sep=None)
-        varName = coolLine[0]
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        if SplitLine[1] == "\"":
+    try:
+        if LineValues[2] == "\"":
+            SplitLine = Line.split(sep=None)
             SplitLine.pop(0)
             SplitLine.pop(0)
-
+            SplitLine.pop(0)
             endofline = len(SplitLine) - 1
             SplitLine.pop(endofline)
-            file = " ".join(SplitLine)
-            try:
-                loadedfile = pickle.load(open(file, "rb"))
-            except FileNotFoundError:
-                for L in Content:
-                    if file in L.split(sep=None):
-                        if "load_file" in L.split(sep=None):
-                            linenum = Content.index(L) + 1
-
-                print(f"ERROR IN LINE({linenum}): FILE NOT FOUND | Couldn't find {file}")
-                #print("PYTHON ERROR TYPE: FileNotFoundError")
-                sys.exit(1)
-            SaveVar(varName, loadedfile)
-        else:
+            SaveVar(LineValues[0], " ".join(SplitLine))
+        if LineValues[2] == "v\"":
+            SplitLine = Line.split(sep=None)
             SplitLine.pop(0)
-            # print(SplitLine)
-            thevar = FindVar(SplitLine[0])
-            loadedfile = pickle.load(open(thevar, "rb"))
-            SaveVar(varName, loadedfile)
-    if LineValues[2] == "randnum":
-        varName = LineValues[0]
-        LineValues.pop(0)
-        LineValues.pop(0)
-        NewLine = " ".join(LineValues)
-        number = randnum(NewLine)
-        SaveVar(varName, number)
-    if LineValues[2] == "py":
-        
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
+            SplitLine.pop(0)
+            thevstring = vString(" ".join(SplitLine))
+            SaveVar(LineValues[0], thevstring)
+        # print(LineValues)
+        # print(LineValues[2])
+        if LineValues[2] == "sub":
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], Sub(" ".join(SplitLine)))
+    # bruh = sub= num -= 10
+        if LineValues[2] == "add":
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], add(" ".join(SplitLine)))
+        if LineValues[2] == "load_file":
+            coolLine = Line.split(sep=None)
+            SplitLine = Line.split(sep=None)
+            varName = coolLine[0]
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            if SplitLine[1] == "\"":
+                SplitLine.pop(0)
+                SplitLine.pop(0)
 
-        SaveVar(LineValues[0], eval(" ".join(SplitLine)))
-        
-        
-    if LineValues[2] == "product":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SaveVar(LineValues[0], product(" ".join(SplitLine)))
-    if LineValues[2] == "i.load_from_file":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SaveVar(LineValues[0], ILoadFromFile(" ".join(SplitLine)))
-    if LineValues[2] == "i.load_list":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SaveVar(LineValues[0], LoadList(" ".join(SplitLine)))
-    if LineValues[2] == "list":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SaveVar(LineValues[0], List(" ".join(SplitLine)))
-    if LineValues[2] == "length":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SaveVar(LineValues[0], Length(" ".join(SplitLine)))
-    if LineValues[2] == "range":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SaveVar(LineValues[0], Irange(" ".join(SplitLine)))
-    if LineValues[2] == "from_list":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SaveVar(LineValues[0], FromList(" ".join(SplitLine)))
-    if LineValues[2] == "int":
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SaveVar(LineValues[0], Iint(" ".join(SplitLine)))
-    if LineValues[2] in varmem:
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SaveVar(LineValues[0], FindVar(SplitLine[0]))
-    if LineValues[2] in inprogramfunctions:
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        Ifunction(" ".join(SplitLine))
-        SaveVar(LineValues[0], FindVar(f"{SplitLine[0]}_return_val"))
+                endofline = len(SplitLine) - 1
+                SplitLine.pop(endofline)
+                file = " ".join(SplitLine)
+                try:
+                    loadedfile = pickle.load(open(file, "rb"))
+                except FileNotFoundError:
+                    for L in Content:
+                        if file in L.split(sep=None):
+                            if "load_file" in L.split(sep=None):
+                                linenum = Content.index(L) + 1
 
+                    print(f"ERROR IN LINE({linenum}): FILE NOT FOUND | Couldn't find {file}")
+                    #print("PYTHON ERROR TYPE: FileNotFoundError")
+                    sys.exit(1)
+                SaveVar(varName, loadedfile)
+            else:
+                SplitLine.pop(0)
+                # print(SplitLine)
+                thevar = FindVar(SplitLine[0])
+                loadedfile = pickle.load(open(thevar, "rb"))
+                SaveVar(varName, loadedfile)
+        if LineValues[2] == "randnum":
+            varName = LineValues[0]
+            LineValues.pop(0)
+            LineValues.pop(0)
+            NewLine = " ".join(LineValues)
+            number = randnum(NewLine)
+            SaveVar(varName, number)
+        if LineValues[2] == "py":
+            
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+
+            SaveVar(LineValues[0], eval(" ".join(SplitLine)))
+            
+            
+        if LineValues[2] == "product":
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], product(" ".join(SplitLine)))
+        if LineValues[2] == "i.load_from_file":
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], ILoadFromFile(" ".join(SplitLine)))
+        if LineValues[2] == "i.load_list":
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], LoadList(" ".join(SplitLine)))
+        if LineValues[2] == "list":
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], List(" ".join(SplitLine)))
+        if LineValues[2] == "length":
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], Length(" ".join(SplitLine)))
+        if LineValues[2] == "range":
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], Irange(" ".join(SplitLine)))
+        if LineValues[2] == "from_list":
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], FromList(" ".join(SplitLine)))
+        if LineValues[2] == "int":
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], Iint(" ".join(SplitLine)))
+        if LineValues[2] in varmem:
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], FindVar(SplitLine[0]))
+        if LineValues[2] in inprogramfunctions:
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            Ifunction(" ".join(SplitLine))
+            SaveVar(LineValues[0], FindVar(f"{SplitLine[0]}_return_val__"))
+    except IndexError:
+        print(f"SYNTAX ERROR: When creating variable \"{LineValues[0]}\" something went wrong")
+        sys.exit(1)
 
 # THE ULTIMATE FUNCTION
 # THE ULTIMATE FUNCTION
@@ -1785,6 +1832,7 @@ def execute(Content):
     variable("- = \" - \"")
     variable("* = \" * \"")
     variable("/ = \" / \"")
+    variable("** = \" ** \"")
     for Line in Content:
         linenum += 1
         LineValues = Line.split(sep=None)
