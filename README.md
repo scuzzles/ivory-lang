@@ -289,7 +289,7 @@ this will return a value of "theString" that has been split into a list.
 
 listjoin:
 ```
-listjoin "," theList
+listjoin " , " theList
 ```
 this will return a value of "theList" that has been joined into a string, seperated by commas.
 
