@@ -19,11 +19,12 @@ Content = open(f"{filename}.iv", "r").readlines()
 forvalue = []
 
 
-
+# looks through the list of saved variables and finds the corresponding data
 def FindVar(var):
     try:
         VarNumVal = varmem.index(var)
         return memory[VarNumVal]
+    # tries to return an error for a specific line and variable
     except ValueError:
         
         for L in Content:
@@ -42,7 +43,7 @@ def FindVar(var):
         sys.exit(1)
 
         
-
+# saves a variable to the list of variables or rewrites an already saved variable
 def SaveVar(varname, varvalue):
     if varname in varmem:
         varnum = varmem.index(varname)
@@ -51,7 +52,7 @@ def SaveVar(varname, varvalue):
         varmem.append(varname)
         memory.append(varvalue)
 
-      
+# creates a sort of a global variable (mostly used for duplicating lists or some specific status)
 def MakeProcess(name, var):
   var = list(var)
   if name in processmem:
@@ -61,16 +62,18 @@ def MakeProcess(name, var):
     processmem.append(name)
     processdata.append(var)
 
+# loads a saved process
 def LoadProcess(name):
   processval = processmem.index(name)
   thevar = processdata[processval]
   return thevar
 
-
+# looks through the list of saved functions and returns its data
 def FindFunc(function):
     FuncNumVal = inprogramfunctions.index(function)
     return functionsmem[FuncNumVal]
 
+# looks through the list of saved sequences and returns its data
 def FindSeq(sequence):
     try:
         FuncNumVal = inprogramsequences.index(sequence)
@@ -262,7 +265,7 @@ def LoadList(Line):
     return pickle.load(open(FileName, "rb"))[int(listindex)]
 
 # length
-
+# returns the length of a string or list
 def Length(Line):
     SplitLine = Line.split(sep=None)
     SplitLine.pop(0)
@@ -274,7 +277,7 @@ def Length(Line):
         length = len(FindVar(SplitLine[0]))
     return length
 
-
+# creates a list
 # list [ cool ] [ the bigger funny ]
 def List(Line):
     SplitLine = Line.split(sep=None)
@@ -323,6 +326,7 @@ def List(Line):
         #print(currentvar)
     return newlist
 
+# appends a value to a list
 def AddToList(Line):
     SplitLine = Line.split(sep=None)
     LineValues = Line.split(sep=None)
@@ -339,7 +343,7 @@ def AddToList(Line):
     SaveVar(LineValues[1], thevar)
 
 
-
+# removes a value from a list
 def RemoveFromList(Line):
     SplitLine = Line.split(sep=None)
     LineValues = Line.split(sep=None)
@@ -380,6 +384,8 @@ def FromList(Line):
     foundlist = FindVar(thelist)
     return foundlist[int(thenum)]
 # range 1 - 5
+
+# makes a list of numbers between a range of two numbers
 def Irange(Line):
     SplitLine = Line.split(sep=None)
     SplitLine.pop(0)
@@ -408,6 +414,7 @@ def Irange(Line):
 # list = ...
 # for i in list {{ sequence.use loop }}
 
+# for loop
 def ForLoop(Line):
     forvalue.append("active")
     SplitLine = Line.split(sep=None)
@@ -498,7 +505,6 @@ def load_file(Line):
         memory.append(loadedfile)
     else:
         SplitLine.pop(0)
-        # print(SplitLine)
         thevar = FindVar(SplitLine[0])
         loadedfile = pickle.load(open(thevar, "rb"))
         memory.append(loadedfile)
@@ -520,9 +526,7 @@ def randnum(Line):
             num2 = Splitline[2]
     return random.randint(int(num1), int(num2))
 
-# from cringe import tyler
-# inprogramfunctions.append(LineValues[1])
-#         functionsmem.append(Line)
+# imports a function from a module
 def Iimportfrom(Line):
     LineValues = Line.split(sep=None)
     ImportContent = open(f"{LineValues[1]}.iv", "r").readlines()
@@ -531,9 +535,10 @@ def Iimportfrom(Line):
         if SplitLine[1] == LineValues[3]:
             inprogramfunctions.append(SplitLine[1])
             functionsmem.append(ImportedLine)
-            #print('BRUH')
         else:
             pass
+
+# imports all functions from a specific module
 def Iimport(Line):
     LineValues = Line.split(sep=None)
     try:
@@ -563,7 +568,6 @@ def Iimport(Line):
             pass
     for NewLine in ImportContent:
         if NewLine.startswith("sequence"):
-            #print(NewLine)
             if NewLine.startswith("sequence.use"):
                 pass
             else:
@@ -576,16 +580,14 @@ def Iimport(Line):
                         sequencesmem.append(NewLine)
                     if SeqValues[2] == "{":
                         seqLine = ImportContent.index(NewLine)
-                        #print(seqLine)
                         MakeProcess("filecopy", ImportContent)
                         filecopy = LoadProcess("filecopy")
                         for x in range(0, seqLine):
 
                             filecopy.pop(0)
-                        #print(filecopy)
                         try:
                             endofseq = filecopy.index("}\n")
-                            #print(endofseq)
+
                             for x in range(1, len(filecopy)):
                                 nextseq = len(filecopy) + 20
                                 if filecopy[x].startswith("sequence.use"):
@@ -593,10 +595,9 @@ def Iimport(Line):
                                 elif filecopy[x].startswith("sequence"):
                                     nextseq = x
                                     break
-                            #print(f"next: {nextseq}")
-                            #print(f"end: {endofseq}")
+
                             if nextseq < endofseq:
-                                #print(nextseq)
+
                                 print("SYNTAX ERROR: Make sure the end of your sequence does not have spaces")
                                 print("example: \"}    \"")
                                 sys.exit(1)
@@ -604,7 +605,7 @@ def Iimport(Line):
 
                             try:
                                 endofseq = filecopy.index("}")
-                                #print(endofseq)
+
                                 for x in range(1, len(filecopy)):
                                     nextseq = len(filecopy) + 20
                                     if filecopy[x].startswith("sequence.use"):
@@ -612,8 +613,6 @@ def Iimport(Line):
                                     elif filecopy[x].startswith("sequence"):
                                         nextseq = x
                                         break
-                                #print(f"next: {nextseq}")
-                                #print(f"end: {endofseq}")
                                 if nextseq < endofseq:
                                     print("SYNTAX ERROR: Make sure the end of your sequence does not have spaces")
                                     print("example: \"}    \"")
@@ -648,6 +647,7 @@ def Iimport(Line):
 
 # sequence.use seq_name
 
+# executes a sequence of code that has been stored in memory
 def Sequence(Line):
     LineValues = Line.split(sep=None)
     newline = FindSeq(LineValues[1])
@@ -674,7 +674,7 @@ def Sequence(Line):
             SplitLine.pop(0)
         SplitLine.pop(0)
 
-# sequence funny print " hello world! " ; var name = input enter name here: ; if name == " funnyman " {{ print " you are a stinky " }} ;
+# evaluates a line of code and executes the corresponding function
 def evaluate(Line):
     SplitLine = Line.split(sep=None)
     try:
@@ -694,7 +694,7 @@ def evaluate(Line):
         
             
 
-
+# this is honestly really weird and I forgot I did this, continue on 
 def CreateSequence(Line):
     LineValues = Line.split(sep=None)
     newline = Line
@@ -719,8 +719,8 @@ def CreateSequence(Line):
             SplitLine.pop(0)
         SplitLine.pop(0)
 
-# sequence seqname print
 
+# this is made to display a sequence in multiple lines of code before a sequence could be written on multiple lines
 def DisplaySequence(Line):
     LineValues = Line.split(sep=None)
     NewerLine = FindSeq(LineValues[1]).split(sep=None)
@@ -740,8 +740,7 @@ def DisplaySequence(Line):
         print(f"{result} ;")
 
 
-# function hello [ enteredName ] print v" hello there enteredName " ;
-# hello " tyrae "
+# this evaluates a stored function
 def Ifunction(Line):
     LineValues = Line.split(sep=None)
     NewLine = FindFunc(LineValues[0])
@@ -855,13 +854,14 @@ def Ifunction(Line):
 
         SplitLine.pop(0)
 
+# a while true loop, I would suggest you do not ever use this
 def Iwhiletrue(Line):
     WhileSplit = Line.split(sep=None)
     WhileSplit.pop(0)
     while True:
         Sequence(" ".join(WhileSplit))
 
-# int " 34 "
+# not important now that ivory deals with number values mostly on it's own
 def Iint(Line):
     SplitLine = Line.split(sep=None)
     SplitLine.pop(0)
@@ -880,7 +880,7 @@ def Ifloat(Line):
         number = float(FindVar(SplitLine[0]))
     return number
 
-
+# this is a while loop, needs some work though
 def Iwhile(Line):
 
     LineValues = Line.split(sep=None)
@@ -912,7 +912,7 @@ def Iwhile(Line):
 
             Sequence(" ".join(useableLine))
 
-# v" hello there %{ var } you are chatting with %{ othervar } "
+# allows you to add variables to the middle of a string
 def vString(string):
     SplitString = string.split(sep=None)
     SplitString.pop(0)
@@ -932,6 +932,7 @@ def vString(string):
 # sub ( health ) - ( damage )
 # sub health -= ( damage )
 
+# this is trash, forget you saw this
 def Sub(Line):
     SplitLine = Line.split(sep=None)
     if "-" in SplitLine:
@@ -959,7 +960,6 @@ def Sub(Line):
         thevalname = SplitLine[0]
 
         SplitLine.pop(0)
-        #print(SplitLine)
         SplitLine.pop(0)
 
 
@@ -969,8 +969,6 @@ def Sub(Line):
             SplitLine.pop(0)
         else:
             otherval = SplitLine[0]
-        #print(thevalname)
-        #print(otherval)
         try:
             result = float(theval) - float(otherval)
             SaveVar(thevalname, result)
@@ -980,7 +978,7 @@ def Sub(Line):
 
 
 # try CODE ; except ERROR ; OTHERCODE
-
+# does not work
 def Itry(Line):
     SplitLine = Line.split(sep=None)
     SplitLine.pop(0)
@@ -1006,7 +1004,7 @@ def Itry(Line):
 
 
 
-
+# avert your eyes
 def product(Line):
     SplitLine = Line.split(sep=None)
     if "*" in SplitLine:
@@ -1034,7 +1032,7 @@ def product(Line):
         thevalname = SplitLine[0]
 
         SplitLine.pop(0)
-        #print(SplitLine)
+
         SplitLine.pop(0)
 
 
@@ -1044,11 +1042,10 @@ def product(Line):
             SplitLine.pop(0)
         else:
             otherval = SplitLine[0]
-        #print(thevalname)
-        #print(otherval)
         result = float(theval) * float(otherval)
         SaveVar(thevalname, result)
 
+# another useless math function
 def div(Line):
     SplitLine = Line.split(sep=None)
     if "/" in SplitLine:
@@ -1076,7 +1073,6 @@ def div(Line):
         thevalname = SplitLine[0]
 
         SplitLine.pop(0)
-        #print(SplitLine)
         SplitLine.pop(0)
 
 
@@ -1086,11 +1082,10 @@ def div(Line):
             SplitLine.pop(0)
         else:
             otherval = SplitLine[0]
-        #print(thevalname)
-        #print(otherval)
         result = float(theval) / float(otherval)
         SaveVar(thevalname, result)
 
+# ew
 def add(Line):
     SplitLine = Line.split(sep=None)
     if "+" in SplitLine:
@@ -1118,7 +1113,6 @@ def add(Line):
         thevalname = SplitLine[0]
 
         SplitLine.pop(0)
-        #print(SplitLine)
         SplitLine.pop(0)
 
 
@@ -1128,14 +1122,12 @@ def add(Line):
             SplitLine.pop(0)
         else:
             otherval = SplitLine[0]
-        #print(thevalname)
-        #print(otherval)
         result = float(theval) + float(otherval)
         SaveVar(thevalname, result)
 
 
 # if var == " hello " {% sequence.use seq_name %} else {% print " not hello " %}
-
+# this is an if statement, the example above was for version 1.0.0
 def Iif(Line):
     LineValues = Line.split(sep=None)
     SplitLine = Line.split(sep=None)
@@ -1352,7 +1344,6 @@ def Iif(Line):
             SplitLine.pop(0)
 
         if float(num1) < float(num2):
-            #print(SplitLine)
             SplitLine.pop(0)
             SplitLine.pop(len(SplitLine) - 1)
             evaluate(" ".join(SplitLine))
@@ -1383,7 +1374,6 @@ def Iif(Line):
             SplitLine.pop(0)
 
         if float(num1) >= float(num2):
-            #print(SplitLine)
             SplitLine.pop(0)
             SplitLine.pop(len(SplitLine) - 1)
             evaluate(" ".join(SplitLine))
@@ -1415,7 +1405,6 @@ def Iif(Line):
             SplitLine.pop(0)
 
         if float(num1) <= float(num2):
-            #print(SplitLine)
             SplitLine.pop(0)
             SplitLine.pop(len(SplitLine) - 1)
             evaluate(" ".join(SplitLine))
@@ -1451,7 +1440,7 @@ def Iif(Line):
             SplitLine.pop(len(SplitLine) - 1)
             evaluate(" ".join(SplitLine))
         
-
+# I don't think this is even used anymore 
 def checkif(Line):
     LineValues = Line.split(sep=None)
     SplitLine = Line.split(sep=None)
@@ -1570,7 +1559,7 @@ def checkif(Line):
 # sequence example var thevar = " hello " ; if thevar == " hello " {{ CODE }} ; else {{ CODE }}
 
 # else {{ ... }}
-
+# else statement
 def Ielse(Line):
     check = "".join(LoadProcess("ifval"))
     
@@ -1586,10 +1575,11 @@ def Ielse(Line):
             print("SYNTAX ERROR: \"{{\" not included in else statement")
             sys.exit(1)
 
+# this allows you to use a python function inside of ivory
 def Ipy(Line):
     eval(Line)
 
-
+# print
 def Iprint(Line):
     SplitLine = Line.split(sep=None)
     SplitLine.pop(0)
@@ -1614,7 +1604,7 @@ def Iprint(Line):
         sys.exit(1)
 
 
-
+# this will determine how a variable will be saved
 def variable(Line):
     LineValues = Line.split(sep=None)
     try:
@@ -1632,14 +1622,11 @@ def variable(Line):
             SplitLine.pop(0)
             thevstring = vString(" ".join(SplitLine))
             SaveVar(LineValues[0], thevstring)
-        # print(LineValues)
-        # print(LineValues[2])
         if LineValues[2] == "sub":
             SplitLine = Line.split(sep=None)
             SplitLine.pop(0)
             SplitLine.pop(0)
             SaveVar(LineValues[0], Sub(" ".join(SplitLine)))
-    # bruh = sub= num -= 10
         if LineValues[2] == "add":
             SplitLine = Line.split(sep=None)
             SplitLine.pop(0)
@@ -1667,12 +1654,10 @@ def variable(Line):
                                 linenum = Content.index(L) + 1
 
                     print(f"ERROR IN LINE({linenum}): FILE NOT FOUND | Couldn't find {file}")
-                    #print("PYTHON ERROR TYPE: FileNotFoundError")
                     sys.exit(1)
                 SaveVar(varName, loadedfile)
             else:
                 SplitLine.pop(0)
-                # print(SplitLine)
                 thevar = FindVar(SplitLine[0])
                 loadedfile = pickle.load(open(thevar, "rb"))
                 SaveVar(varName, loadedfile)
@@ -1748,15 +1733,8 @@ def variable(Line):
         print(f"SYNTAX ERROR: When creating variable \"{LineValues[0]}\" something went wrong")
         sys.exit(1)
 
-# THE ULTIMATE FUNCTION
-# THE ULTIMATE FUNCTION
-# THE ULTIMATE FUNCTION
-# THE ULTIMATE FUNCTION
-# THE ULTIMATE FUNCTION
-# THE ULTIMATE FUNCTION
-# THE ULTIMATE FUNCTION
-# THE ULTIMATE FUNCTION
 
+# this just makes it easier to determine what function to use
 def IvoryFunctions(Line, function=None):
     if function == None:
         pass
@@ -1777,7 +1755,7 @@ def IvoryFunctions(Line, function=None):
     elif function == "add":
         add(Line)
 
-# "i.create_file", "i.save_to_file", "i.load_from_file"
+# just more functions, ignore the typo
 def NewFunctions(Line, function=None):
     SplitLine = Line.split(sep=None)
     if function == None:
@@ -1825,6 +1803,7 @@ def NewFunctions(Line, function=None):
 # interpreter
 # interpreter
 
+# this executes a .iv file using all of the functions above
 def execute(Content):
     linenum = 0
     Iimport("import iv_built-in")
@@ -1833,6 +1812,8 @@ def execute(Content):
     variable("* = \" * \"")
     variable("/ = \" / \"")
     variable("** = \" ** \"")
+    variable("% = \" % \"")
+    variable("// = \" // \"")
     for Line in Content:
         linenum += 1
         LineValues = Line.split(sep=None)
@@ -1841,30 +1822,6 @@ def execute(Content):
             SplitLine = Line.split(sep=None)
             SplitLine.pop(0)
             variable(" ".join(SplitLine))
-
-
-
-
-
-            #else:
-            #    varmem.append(LineValues[0])
-            #    SplitLine = Line.split(sep=None)
-            #    SplitLine.pop(0)
-            #    SplitLine.pop(0)
-            #    if SplitLine[0] == "\"":
-            #        SplitLine.pop(0)
-            #        endofline = len(SplitLine) - 1
-            #        SplitLine.pop(endofline)
-            #        NewLine = " ".join(SplitLine)
-                    # print(NewLine)
-            #        memory.append(NewLine)
-            #    else:
-            #        memory.append(memory[varmem.index(SplitLine[0])])q
-
-
-        # function test [ num ] { return randnum 1 ( number ) }
-
-
 
 
         if Line.startswith("import"):
@@ -1902,11 +1859,8 @@ def execute(Content):
             Ifunction(Line)
         
 
-# NEW SEQ
-# sequence ex { CODE }
-
+        # stores a sequence properly in memory to be used in the future
         if Line.startswith("sequence"):
-            #print(Line)
             if Line.startswith("sequence.use"):
                 pass
             else:
@@ -1918,16 +1872,14 @@ def execute(Content):
                     sequencesmem.append(Line)
                 if LineValues[2] == "{":
                     seqLine = Content.index(Line)
-                    #print(seqLine)
                     MakeProcess("filecopy", Content)
                     filecopy = LoadProcess("filecopy")
                     for x in range(0, seqLine):
 
                         filecopy.pop(0)
-                    #print(filecopy)
                     try:
                         endofseq = filecopy.index("}\n")
-                        #print(endofseq)
+ 
                         for x in range(1, len(filecopy)):
                             nextseq = len(filecopy) + 20
                             if filecopy[x].startswith("sequence.use"):
@@ -1935,10 +1887,7 @@ def execute(Content):
                             elif filecopy[x].startswith("sequence"):
                                 nextseq = x
                                 break
-                        #print(f"next: {nextseq}")
-                        #print(f"end: {endofseq}")
                         if nextseq < endofseq:
-                            #print(nextseq)
                             print("SYNTAX ERROR: Make sure the end of your sequence does not have spaces")
                             print("example: \"}    \"")
                             sys.exit(1)
@@ -1946,7 +1895,6 @@ def execute(Content):
 
                         try:
                             endofseq = filecopy.index("}")
-                            #print(endofseq)
                             for x in range(1, len(filecopy)):
                                 nextseq = len(filecopy) + 20
                                 if filecopy[x].startswith("sequence.use"):
@@ -1954,8 +1902,6 @@ def execute(Content):
                                 elif filecopy[x].startswith("sequence"):
                                     nextseq = x
                                     break
-                            #print(f"next: {nextseq}")
-                            #print(f"end: {endofseq}")
                             if nextseq < endofseq:
                                 print("SYNTAX ERROR: Make sure the end of your sequence does not have spaces")
                                 print("example: \"}    \"")
@@ -1993,21 +1939,14 @@ def execute(Content):
         if Line.startswith("print"):
             Iprint(Line)
 
-        if Line.startswith("input"):
-            SplitLine = Line.split(sep=None)
-            SplitLine.pop(0)
-            NewLine = " ".join(SplitLine)
-            inp = input(NewLine)
-            memory.append(inp)
 
-    # save " test " " file.txt "
         if Line.startswith("save_file"):
             save_file(Line)
 
 
 
 
-    # IF THAN EX: if 1 == f print test else print broken
+
         if Line.startswith("if"):
             Iif(Line)
         if Line.startswith("else"):

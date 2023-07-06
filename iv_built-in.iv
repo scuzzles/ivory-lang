@@ -66,6 +66,8 @@ if op__ == - {{ var RESULT__ = sub_int NUM1__ - num2__ }}
 if op__ == * {{ var RESULT__ = product_int NUM1__ * num2__ }}
 if op__ == / {{ var RESULT__ = div_int NUM1__ / num2__ }}
 if op__ == ** {{ var RESULT__ = py int(FindVar("NUM1__")) ** int(FindVar("num2__")) }}
+if op__ == % {{ var RESULT__ = py int(FindVar("NUM1__")) % int(FindVar("num2__")) }}
+if op__ == // {{ var RESULT__ = py int(FindVar("NUM1__")) // int(FindVar("num2__")) }}
 }
 
 sequence math_seq_float {
@@ -74,6 +76,7 @@ if op__ == - {{ var RESULT__ = sub_float NUM1__ - num2__ }}
 if op__ == * {{ var RESULT__ = product_float NUM1__ * num2__ }}
 if op__ == / {{ var RESULT__ = div_float NUM1__ / num2__ }}
 if op__ == ** {{ var RESULT__ = py float(FindVar("NUM1__")) ** float(FindVar("num2__")) }}
+if op__ == // {{ var RESULT__ = py float(FindVar("NUM1__")) // float(FindVar("num2__")) }}
 }
 
 
