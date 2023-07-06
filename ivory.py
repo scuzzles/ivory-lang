@@ -5,7 +5,7 @@ import Ivory_imports as i
 from Ivory_files import CreateFile, SaveToFile, LoadFromFile
 memory = []
 varmem = []
-functions = ["print", "input", "randnum", "save_file", "load_file", "var", "add", "sub"]
+functions = ["print", "randnum", "save_file", "load_file", "var", "add", "sub"]
 newerFunctions = ["sequence", "sequence.use", "py", "while", "whiletrue", "display_sequence", "i.create_file", "i.save_to_file", "i.load_from_file", "list", "from_list", "for", "test", "sequence.create", "try", "append", "break"]
 inprogramfunctions = []
 functionsmem = []
@@ -883,12 +883,50 @@ def Ifloat(Line):
 # this is a while loop, needs some work though
 def Iwhile(Line):
 
+# WHILE EQUAL TO
+# WHILE EQUAL TO
+# WHILE EQUAL TO
+
+# LineValues is for the unedited split version of the line
     LineValues = Line.split(sep=None)
     if "==" in LineValues:
 
         SplitLine = Line.split(sep=None)
+# The first variable for comparison is the 2nd value in the line
         var1 = FindVar(LineValues[1])
-        #print(var1)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+# This checks if the second var is going to be a string or a variable
+        if SplitLine[0] == "\"":
+            SplitLine.pop(0)
+            endofval = SplitLine.index("\"")
+            endofline = len(SplitLine)
+            for x in range(endofval, endofline):
+                SplitLine.pop(endofval)
+
+            var2 = " ".join(SplitLine)
+        else:
+            var2 = FindVar(LineValues[3])
+# I think that useableLine is just for a new line but I'm not sure why I did it this way
+# I made this a long time ago
+        useableLine = Line.split(sep=None)
+        LineStartVal = useableLine.index("sequence.use")
+        for z in range(0, LineStartVal):
+            useableLine.pop(0)
+
+        while var2 == FindVar(LineValues[1]):
+
+            Sequence(" ".join(useableLine))
+
+# WHILE GREATER THAN
+# WHILE GREATER THAN
+# WHILE GREATER THAN
+
+    if ">" in LineValues:
+        SplitLine = Line.split(sep=None)
+        var1 = FindVar(LineValues[1])
+
         SplitLine.pop(0)
         SplitLine.pop(0)
         SplitLine.pop(0)
@@ -898,19 +936,51 @@ def Iwhile(Line):
             endofline = len(SplitLine)
             for x in range(endofval, endofline):
                 SplitLine.pop(endofval)
-
             var2 = " ".join(SplitLine)
-            #print(var2)
+
         else:
             var2 = FindVar(LineValues[3])
         useableLine = Line.split(sep=None)
         LineStartVal = useableLine.index("sequence.use")
         for z in range(0, LineStartVal):
             useableLine.pop(0)
-
-        while var2 == FindVar(LineValues[1]):
-
+        while var1 > var2:
             Sequence(" ".join(useableLine))
+            var1 = float(FindVar(LineValues[1]))
+            var2 = float(FindVar(LineValues[3]))
+
+# WHILE LESS THAN
+# WHILE LESS THAN
+# WHILE LESS THAN
+
+    if "<" in LineValues:
+        SplitLine = Line.split(sep=None)
+        var1 = FindVar(LineValues[1])
+
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        if SplitLine[0] == "\"":
+            SplitLine.pop(0)
+            endofval = SplitLine.index("\"")
+            endofline = len(SplitLine)
+            for x in range(endofval, endofline):
+                SplitLine.pop(endofval)
+            var2 = " ".join(SplitLine)
+        else:
+            var2 = FindVar(LineValues[3])
+            
+        useableLine = Line.split(sep=None)
+        LineStartVal = useableLine.index("sequence.use")
+        for z in range(0, LineStartVal):
+            useableLine.pop(0)
+
+        
+        while var1 < var2:
+            Sequence(" ".join(useableLine))
+            var1 = float(FindVar(LineValues[1]))
+            var2 = float(FindVar(LineValues[3]))
+    
 
 # allows you to add variables to the middle of a string
 def vString(string):

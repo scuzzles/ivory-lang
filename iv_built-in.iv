@@ -58,7 +58,7 @@ function square_int [ NUMBER__ ] var RESULT__ = py int(FindVar("NUMBER__")) ** 2
 function input [ PROMPT__ ] var USERINPUT__ = py input(FindVar("PROMPT__")) ; return USERINPUT__ ;
 
 
-
+function upper [ variable__ ] var result__ = py FindVar("variable__").upper() ; return result__ ;
 
 sequence math_seq_int {
 if op__ == + {{ var RESULT__ = add_int NUM1__ + num2__ }}
@@ -76,6 +76,7 @@ if op__ == - {{ var RESULT__ = sub_float NUM1__ - num2__ }}
 if op__ == * {{ var RESULT__ = product_float NUM1__ * num2__ }}
 if op__ == / {{ var RESULT__ = div_float NUM1__ / num2__ }}
 if op__ == ** {{ var RESULT__ = py float(FindVar("NUM1__")) ** float(FindVar("num2__")) }}
+if op__ == % {{ var RESULT__ = py float(FindVar("NUM1__")) % float(FindVar("num2__")) }}
 if op__ == // {{ var RESULT__ = py float(FindVar("NUM1__")) // float(FindVar("num2__")) }}
 }
 
