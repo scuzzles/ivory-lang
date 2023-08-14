@@ -622,11 +622,16 @@ def Ifunction(Line):
                     try:
                         endofcurrentvar = currentvar.index("\"")
                     except ValueError:   
-                        ELine = Line
-                        print(f"ERROR Line: {Line} | SYNTAX ERROR | Missing required \" at end of statement")
+                        ELine = Linenum[0]
+                        print(f"ERROR Line: {Line} | SYNTAX ERROR | Missing required statements in statement")
                         sys.exit(1)     
                     for v in range(endofcurrentvar, len(currentvar)):
                         currentvar.pop(endofcurrentvar)
+                    indexval = -1
+                    for x in currentvar:
+                        indexval += 1
+                        if x == '\\"':
+                            currentvar[indexval] = "\""
                     SaveVar(var, " ".join(currentvar))
                     for value in currentvar:
                         LineValues.pop(0)
@@ -795,6 +800,11 @@ def vString(string):
         thevar = varend - 1
         SplitString[thevar] = str(FindVar(SplitString[thevar]))
         SplitString.pop(varend)
+    indexval = -1
+    for x in SplitString:
+        indexval += 1
+        if x == '\\"':
+            SplitString[indexval] = "\""
     newstring = " ".join(SplitString)
     return newstring
 
@@ -858,6 +868,11 @@ def Iif(Line):
                 SplitLine.pop(0)
             SplitLine.pop(0)
             SplitLine.pop(0)
+            indexval = -1
+            for x in SplitLine:
+                indexval += 1
+                if x == '\\"':
+                    SplitLine[indexval] = "\""
             checkedvar = " ".join(NewLine)
 
             if str(FindVar(LineValues[1])) == str(checkedvar):
@@ -1295,6 +1310,12 @@ def Iprint(Line):
         if SplitLine[0] == "\"":
             SplitLine.pop(0)
             SplitLine.pop(len(SplitLine) - 1)
+            indexval = -1
+            for x in SplitLine:
+                indexval += 1
+                if x == '\\"':
+                    SplitLine[indexval] = "\""
+
             NewLine = " ".join(SplitLine)
             print(NewLine)
         elif SplitLine[0] == "v\"":
@@ -1321,6 +1342,11 @@ def variable(Line):
             SplitLine.pop(0)
             endofline = len(SplitLine) - 1
             SplitLine.pop(endofline)
+            indexval = -1
+            for x in SplitLine: 
+                indexval += 1
+                if x == '\\"':
+                    SplitLine[indexval] = "\""
             SaveVar(LineValues[0], " ".join(SplitLine))
         if LineValues[2] == "v\"":
             SplitLine = Line.split(sep=None)
