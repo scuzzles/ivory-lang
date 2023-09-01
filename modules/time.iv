@@ -1,0 +1,1 @@
+function time_sleep [ amount__ ] py i.time.sleep(float(FindVar("amount__"))) ;

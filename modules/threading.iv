@@ -1,0 +1,5 @@
+function thread [ called_seq__ ] var THREAD__ = py i.threading.Thread(target=Ithread) ; return THREAD__ ;
+
+function start_thread [ thread_val__ ] py FindVar("thread_val__").start() ;
+
+function run_thread [ called_seq__ ] py i.threading.Thread(target=Ithread).start() ; 

@@ -1,0 +1,9 @@
+function random_seed [ number__ ] var result__ = py i.random.seed(float(FindVar("number__"))) ; return result__ ;
+
+function random [ leave_blank__ ] var result__ = py i.random.random() ; return result__ ;
+
+function random_randint [ range1__ range2__ ] var result__ = py i.random.randint(int(FindVar("range1__")), int(FindVar("range2__"))) ; return result__ ;
+
+function random_randrange [ stop__ ] var result__ = py i.random.randrange(int(FindVar("stop__"))) ; return result__ ;
+
+function random_choice [ list/table_value__ ] var result__ = py i.random.choice(FindVar("list/table_value__")) ; return result__ ;

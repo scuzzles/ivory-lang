@@ -1,0 +1,4 @@
+function pickle_dump [ data__ filename__ ] py pickle.dump(FindVar("data__"), open(FindVar("filename__"), "wb")) ;
+function pickle_load [ filename__ ] var result__ = py pickle.load(open(FindVar("filename__"), "rb")) ; return result__ ;
+function pickle_dumps [ data__ ] var res__ = py pickle.dumps(FindVar("data__")) ; return res__ ;
+function pickle_loads [ data__ ] var res__ = py pickle.loads(FindVar("res__")) ; return res__ ;

@@ -1,0 +1,21 @@
+
+sequence server_run {
+var server = py i.socket.socket(i.socket.AF_INET, i.socket.SOCK_STREAM) 
+py FindVar("server").setsockopt(i.socket.SOL_SOCKET, i.socket.SO_REUSEADDR, 1)
+py FindVar("server").bind((FindVar("address__"), int(FindVar("port__"))))
+py FindVar("server").listen()
+var client = py FindVar("server").accept()
+}
+
+function server_run [ address__ port__ ] sequence.use server_run ;
+
+sequence client_conn {
+var client = py i.socket.socket(i.socket.AF_INET, i.socket.SOCK_STREAM) 
+py FindVar("client").connect((FindVar("address__"), int(FindVar("port__"))))
+}
+
+function client_conn [ address__ port__ ] sequence.use client_conn ;
+
+function socket_send [ data ] py FindVar("client").send(FindVar("data").encode("utf-8")) ;
+
+function socket_recv [ bytes ] var recieved__ = py FindVar("client")[0].recv(int(FindVar("bytes"))).decode("utf-8") ; return recieved__ ;

@@ -1,8 +1,14 @@
 import pickle
 import sys
 import random
+import socket
 import Ivory_imports as i
 Linenum = [0]
+currentfunc = [0]
+currentseq = [0]
+activefunc = [0]
+lockedfunc = [0]
+sequenceval = ["notactive"]
 memory = []
 varmem = []
 functions = ["print", "save_file", "load_file", "var"]
@@ -13,7 +19,7 @@ processmem = []
 processdata = []
 inprogramsequences = []
 sequencesmem = []
-filename = input("Enter the name of your file here:")
+filename = input("enter the name of your file here:")
 print("")
 Content = open(f"{filename}.iv", "r").readlines()
 forvalue = []
@@ -24,19 +30,15 @@ def FindVar(var):
         return memory[VarNumVal]
     except ValueError:
         
-        for L in Content:
-            if var in L.split(sep=None):
-                if L.startswith("var"):
-                    if L.split(sep=None)[3] == var:
-                        pass
-                    linenum = Content.index(L) + 1
-                
-                else:
-                    linenum = Content.index(L) + 1
-        try:
-            print(f"ERROR IN LINE({linenum}): UNDEFINED VARIABLE | Could not find \"{var}\" ")
-        except UnboundLocalError:
-            print(f"ERROR: UNDEFINED VARIABLE | Could not find \"{var}\" ")
+        
+        if var.endswith("return_val__"):
+            print("it did")
+        
+        print(f"ERROR: UNDEFINED VARIABLE | LINE: {Linenum[0]} | Could not find \"{var}\" ")
+        if sequenceval[0] == "active":
+            print(f"ERROR OCCURED IN SEQUENCE: \"{currentseq[0]}\"")
+        
+            
         sys.exit(1)
 
         
@@ -71,19 +73,13 @@ def FindSeq(sequence):
         FuncNumVal = inprogramsequences.index(sequence)
         return sequencesmem[FuncNumVal]
     except ValueError:
-        for L in Content:
-            if sequence in L.split(sep=None):
-                if L.startswith("var"):
-                    if L.split(sep=None)[3] == sequence:
-                        pass
-                    linenum = Content.index(L) + 1
-                
-                else:
-                    linenum = Content.index(L) + 1
+        linenum = Linenum[0]
         print(f"ERROR IN LINE({linenum}): UNDEFINED SEQUENCE | Could not find \"{sequence}\" ")
         sys.exit(1)
         
-
+def Ithread():
+    seq = FindVar("called_seq__")
+    Sequence(f"sequence.use {seq}")
 
 
 
@@ -174,29 +170,35 @@ def table(Line):
     SplitLine.pop(0)
     SplitLine.pop(0)
     startnum = len(SplitLine)
-    while startnum > 0:
-        if SplitLine[0] == "\"":
-            SplitLine.pop(0)
-            endofstring = SplitLine.index("\"")
-            templine = list(SplitLine)
-            for x in range(endofstring, len(SplitLine)):
-                templine.pop(endofstring)
-            for x in templine:
+    if SplitLine[0] == "}":
+      pass
+    else:
+        while startnum > 0:
+            if SplitLine[0] == "\"":
+                SplitLine.pop(0)
+                endofstring = SplitLine.index("\"")
+                templine = list(SplitLine)
+                for x in range(endofstring, len(SplitLine)):
+                    templine.pop(endofstring)
+                for x in templine:
+                    SplitLine.pop(0)
+                    startnum -= 1
                 SplitLine.pop(0)
                 startnum -= 1
-            SplitLine.pop(0)
-            startnum -= 1
-            result.append(" ".join(templine))
-        elif SplitLine[0] in varmem:
-            found = FindVar(SplitLine[0])
-            SplitLine.pop(0)
-            startnum -= 1
-            result.append(found)
-        elif SplitLine[0] == "}":
-            break
-        else:
-            print(f"ERROR IN LINE {Linenum[0]}: TABLE ERROR | Invalid value in table")
-            sys.exit(1)
+                result.append(" ".join(templine))
+            elif SplitLine[0] in varmem:
+                found = FindVar(SplitLine[0])
+                SplitLine.pop(0)
+                startnum -= 1
+                result.append(found)
+            elif SplitLine[0] == "}":
+                break
+            else:
+                print(f"ERROR IN LINE {Linenum[0]}: TABLE ERROR | Invalid value in table")
+                if sequenceval[0] == "active":
+                    if currentseq[0] != 0:
+                        print(f"ERROR OCCURED IN SEQUENCE: \"{currentseq[0]}\"")
+                sys.exit(1)
             
         
     return result
@@ -250,30 +252,8 @@ def FromList(Line):
 # range 1 - 5
 
 # makes a list of numbers between a range of two numbers
-def Irange(Line):
-    SplitLine = Line.split(sep=None)
-    SplitLine.pop(0)
-    if SplitLine[0] == "(":
-        SplitLine.pop(0)
-        startval = FindVar(SplitLine[0])
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-    else:
-        startval = SplitLine[0]
-        SplitLine.pop(0)
-    SplitLine.pop(0)
-    if SplitLine[0] == "(":
-        SplitLine.pop(0)
-        endval = FindVar(SplitLine[0])
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-    else:
-        endval = SplitLine[0]
-        SplitLine.pop(0)
-    rangelist = []
-    for b in range(int(startval), int(endval)):
-        rangelist.append(b)
-    return rangelist
+
+
 
 # list = ...
 # for i in list {{ sequence.use loop }}
@@ -287,15 +267,8 @@ def ForLoop(Line):
     SaveVar(LineValues[1], "None")
     SplitLine.pop(0)
     SplitLine.pop(0)
-    if SplitLine[0] == "range":
-        endofrange = SplitLine.index("{{")
-        MakeProcess("newline", SplitLine)
-        newline = LoadProcess("newline")
-        for d in range(endofrange, len(newline)):
-            newline.pop(endofrange)
-        newlist = Irange(" ".join(newline))
-    else:
-        newlist = FindVar(SplitLine[0])
+    
+    newlist = FindVar(SplitLine[0])
     SplitLine.pop(0)
     SplitLine.pop(0)
     SplitLine.pop(len(SplitLine) - 1)
@@ -491,15 +464,20 @@ def Iimport(Line):
         
 
 
+
 def Sequence(Line):
+    sequenceval[0] = "active"
     LineValues = Line.split(sep=None)
     newline = FindSeq(LineValues[1])
+    
     SplitLine = newline.split(sep=None)
     SplitLine.pop(0)
     SplitLine.pop(0)
     endofline1 = SplitLine.index(";")
     linevalues = SplitLine.count(";")
+    currentseq[0] = LineValues[1]
     for x in range(0, linevalues):
+        currentseq[0] = LineValues[1]
         endofcurrentline = SplitLine.index(";")
         MakeProcess("currentline", SplitLine)
         currentline = LoadProcess("currentline")
@@ -513,6 +491,17 @@ def Sequence(Line):
             variable(" ".join(currentline))
         elif currentline[0] == "if":
             Iif(" ".join(currentline))
+        elif currentline[0] == "return":
+            currentline.pop(0)
+            print(currentline)
+            print(activefunc[0])
+            if currentline[0] == "\"":
+                currentline.pop(0)
+                currentline.pop(len(currentline) - 1)
+                SaveVar(f"{activefunc[0]}_return_val__", " ".join(currentline))
+            else:
+                print(f"return would be: {FindVar(currentline[0])}")
+                SaveVar(f"{activefunc[0]}_return_val__", FindVar(currentline[0]))
         for value in currentline:
             SplitLine.pop(0)
         SplitLine.pop(0)
@@ -530,8 +519,15 @@ def evaluate(Line):
             Ifunction(" ".join(SplitLine))
         elif SplitLine[0] == "else":
             Ielse(" ".join(SplitLine))
+        elif SplitLine[0] == "var:":
+          pass
     except Exception as E:
         print(f"ERROR CODE: {E} | LINE: {Line}")
+        if sequenceval[0] == "active":
+            if currentseq[0] != 0:
+                print(f"ERROR OCCURED IN SEQUENCE: \"{currentseq[0]}\"")
+        print(f"Line number: {Linenum[0]}")
+        sys.exit(1)
     
         
             
@@ -566,6 +562,7 @@ def CreateSequence(Line):
 def Ifunction(Line):
     LineValues = Line.split(sep=None)
     NewLine = FindFunc(LineValues[0])
+    currentfunc[0] = LineValues[0]
     PureList = NewLine.split(sep=None)
     SplitLine = NewLine.split(sep=None)
     SplitLine.pop(0)
@@ -624,6 +621,9 @@ def Ifunction(Line):
                     except ValueError:   
                         ELine = Linenum[0]
                         print(f"ERROR Line: {Line} | SYNTAX ERROR | Missing required statements in statement")
+                        if sequenceval[0] == "active":
+                            if currentseq[0] != 0:
+                                print(f"ERROR OCCURED IN SEQUENCE: \"{currentseq[0]}\"")
                         sys.exit(1)     
                     for v in range(endofcurrentvar, len(currentvar)):
                         currentvar.pop(endofcurrentvar)
@@ -644,6 +644,9 @@ def Ifunction(Line):
                     if Line in L:
                         linenum = Content.index(L) + 1
                 print(f"ERROR IN LINE({linenum}): SYNTAX ERROR | Missing required values in the \"{Line.split(sep=None)[0]}\" function")
+                if sequenceval[0] == "active":
+                    if currentseq[0] != 0:
+                        print(f"ERROR OCCURED IN SEQUENCE: \"{currentseq[0]}\"")
                 sys.exit(1)
 
             SplitLine.pop(0)
@@ -653,19 +656,27 @@ def Ifunction(Line):
         endofcurrentline = SplitLine.index(";")
         MakeProcess("currentline", SplitLine)
         currentline = LoadProcess("currentline")
-
+        
         for value in range(endofcurrentline, len(SplitLine)):
-            currentline.pop(endofcurrentline)
+            currentline.pop(endofcurrentline) 
+        
+        if currentline[0] == "sequence.use":
+            activefunc[0] = PureList[1]
         try:
             evaluate(" ".join(currentline))
         except Exception as E:
             print(f"PYTHON ERROR: {E}")
             print(f"ERROR LINE: {Line}")
+            print(f"Line Number: {Linenum[0]}")
+            if sequenceval[0] == "active":
+                if currentseq[0] != 0:
+                    print(f"ERROR OCCURED IN SEQUENCE: \"{currentseq[0]}\"")
             sys.exit(1)
         if currentline[0] == "var":
             variable(" ".join(currentline))
         if currentline[0] == "if":
             Iif(" ".join(currentline))
+        
         
         for value in currentline:
             SplitLine.pop(0)
@@ -719,10 +730,11 @@ def Iwhile(Line):
         LineStartVal = useableLine.index("{{")
         for z in range(0, LineStartVal):
             useableLine.pop(0)
-
+        useableLine.pop(0)
+        useableLine.pop(len(useableLine) - 1)
         while var2 == FindVar(LineValues[1]):
 
-            Sequence(" ".join(useableLine))
+            evaluate(" ".join(useableLine))
 
 # WHILE GREATER THAN
 # WHILE GREATER THAN
@@ -910,7 +922,7 @@ def Iif(Line):
                 
             else: 
                 MakeProcess("ifval", "false")
-                return True
+                return False
             
 # COMPARES VARS
         else:
@@ -968,6 +980,9 @@ def Iif(Line):
                         if Line in Content:
                             linenum = Content.index(L) + 1
                     print(f"ERROR IN LINE({linenum}): UNFINISHED STATEMENT | If statement missing", "\"{{}}\"", "brackets")
+                    if sequenceval[0] == "active":
+                        if currentseq[0] != 0:
+                            print(f"ERROR OCCURED IN SEQUENCE: \"{currentseq[0]}\"")
                     sys.exit(1)
                 for x in range(endofif, len(newestline)):
                     newestline.pop(endofif)
@@ -1162,6 +1177,11 @@ def Iif(Line):
             SplitLine.pop(0)
             SplitLine.pop(len(SplitLine) - 1)
             evaluate(" ".join(SplitLine))
+            
+            MakeProcess("ifval", "true")
+            return True
+        else:
+            MakeProcess("ifval", "false")
         
 # I don't think this is even used anymore 
 def checkif(Line):
@@ -1320,120 +1340,126 @@ def Iprint(Line):
             print(NewLine)
         elif SplitLine[0] == "v\"":
             print(vString(" ".join(SplitLine)))
-        elif SplitLine[0] in varmem :
+        else:
             foundvar = FindVar(SplitLine[0])
             print(foundvar)
     except IndexError:
-        for L in Content:
-            if Line in L:
-                linenum = Content.index(L) + 1
-        print(f"ERROR IN LINE({linenum}): UNFINISHED FUNCTION | Missing insructions after print statement")
+        
+        print(f"ERROR IN LINE({Linenum[0]}): UNFINISHED FUNCTION | Missing insructions after print statement")
+        if sequenceval[0] == "active":
+            if currentseq[0] != 0:
+                print(f"ERROR OCCURED IN SEQUENCE: \"{currentseq[0]}\"")
         sys.exit(1)
 
+def Irange(num1, num2):
+    rangelist = []
+    for x in range(int(num1), int(num2)):
+        rangelist.append(x)
+    return rangelist
+def changeval():
+    FindVar("table__")[int(FindVar("location__"))] = FindVar("newval__")
+    
 
 # this will determine how a variable will be saved
 def variable(Line):
     LineValues = Line.split(sep=None)
-    try:
-        if LineValues[2] == "\"":
-            SplitLine = Line.split(sep=None)
+
+    if LineValues[2] == "\"":
+        SplitLine = Line.split(sep=None)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        endofline = len(SplitLine) - 1
+        SplitLine.pop(endofline)
+        indexval = -1
+        for x in SplitLine: 
+            indexval += 1
+            if x == '\\"':
+                SplitLine[indexval] = "\""
+        SaveVar(LineValues[0], " ".join(SplitLine))
+    if LineValues[2] == "v\"":
+        SplitLine = Line.split(sep=None)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        thevstring = vString(" ".join(SplitLine))
+        SaveVar(LineValues[0], thevstring)
+    if LineValues[2] == "load_file":
+        coolLine = Line.split(sep=None)
+        SplitLine = Line.split(sep=None)
+        varName = coolLine[0]
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        if SplitLine[1] == "\"":
             SplitLine.pop(0)
             SplitLine.pop(0)
-            SplitLine.pop(0)
+
             endofline = len(SplitLine) - 1
             SplitLine.pop(endofline)
-            indexval = -1
-            for x in SplitLine: 
-                indexval += 1
-                if x == '\\"':
-                    SplitLine[indexval] = "\""
-            SaveVar(LineValues[0], " ".join(SplitLine))
-        if LineValues[2] == "v\"":
-            SplitLine = Line.split(sep=None)
-            SplitLine.pop(0)
-            SplitLine.pop(0)
-            thevstring = vString(" ".join(SplitLine))
-            SaveVar(LineValues[0], thevstring)
-        if LineValues[2] == "load_file":
-            coolLine = Line.split(sep=None)
-            SplitLine = Line.split(sep=None)
-            varName = coolLine[0]
-            SplitLine.pop(0)
-            SplitLine.pop(0)
-            if SplitLine[1] == "\"":
-                SplitLine.pop(0)
-                SplitLine.pop(0)
+            file = " ".join(SplitLine)
+            try:
+                loadedfile = pickle.load(open(file, "rb"))
+            except FileNotFoundError:
+                for L in Content:
+                    if file in L.split(sep=None):
+                        if "load_file" in L.split(sep=None):
+                            linenum = Content.index(L) + 1
 
-                endofline = len(SplitLine) - 1
-                SplitLine.pop(endofline)
-                file = " ".join(SplitLine)
-                try:
-                    loadedfile = pickle.load(open(file, "rb"))
-                except FileNotFoundError:
-                    for L in Content:
-                        if file in L.split(sep=None):
-                            if "load_file" in L.split(sep=None):
-                                linenum = Content.index(L) + 1
+                print(f"ERROR IN LINE({linenum}): FILE NOT FOUND | Couldn't find {file}")
+                if sequenceval[0] == "active":
+                    if currentseq[0] != 0:
+                        print(f"ERROR OCCURED IN SEQUENCE: \"{currentseq[0]}\"")
+                sys.exit(1)
+            SaveVar(varName, loadedfile)
+        else:
+            SplitLine.pop(0)
+            thevar = FindVar(SplitLine[0])
+            loadedfile = pickle.load(open(thevar, "rb"))
+            SaveVar(varName, loadedfile)
 
-                    print(f"ERROR IN LINE({linenum}): FILE NOT FOUND | Couldn't find {file}")
-                    sys.exit(1)
-                SaveVar(varName, loadedfile)
-            else:
-                SplitLine.pop(0)
-                thevar = FindVar(SplitLine[0])
-                loadedfile = pickle.load(open(thevar, "rb"))
-                SaveVar(varName, loadedfile)
+    if LineValues[2] == "py":
+        
+        SplitLine = Line.split(sep=None)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
 
-        if LineValues[2] == "py":
-            
-            SplitLine = Line.split(sep=None)
-            SplitLine.pop(0)
-            SplitLine.pop(0)
-            SplitLine.pop(0)
+        SaveVar(LineValues[0], eval(" ".join(SplitLine)))
+        
+        
 
-            SaveVar(LineValues[0], eval(" ".join(SplitLine)))
-            
-            
+    if LineValues[2] == "list":
+        SplitLine = Line.split(sep=None)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        SaveVar(LineValues[0], List(" ".join(SplitLine)))
+    if LineValues[2] == "table":
+        SplitLine = Line.split(sep=None)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        SaveVar(LineValues[0], table(" ".join(SplitLine)))
+    if LineValues[2] == "length":
+        SplitLine = Line.split(sep=None)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        SaveVar(LineValues[0], Length(" ".join(SplitLine)))
 
-        if LineValues[2] == "list":
-            SplitLine = Line.split(sep=None)
-            SplitLine.pop(0)
-            SplitLine.pop(0)
-            SaveVar(LineValues[0], List(" ".join(SplitLine)))
-        if LineValues[2] == "table":
-            SplitLine = Line.split(sep=None)
-            SplitLine.pop(0)
-            SplitLine.pop(0)
-            SaveVar(LineValues[0], table(" ".join(SplitLine)))
-        if LineValues[2] == "length":
-            SplitLine = Line.split(sep=None)
-            SplitLine.pop(0)
-            SplitLine.pop(0)
-            SaveVar(LineValues[0], Length(" ".join(SplitLine)))
-        if LineValues[2] == "range":
-            SplitLine = Line.split(sep=None)
-            SplitLine.pop(0)
-            SplitLine.pop(0)
-            SaveVar(LineValues[0], Irange(" ".join(SplitLine)))
-        if LineValues[2] == "from_list":
-            SplitLine = Line.split(sep=None)
-            SplitLine.pop(0)
-            SplitLine.pop(0)
-            SaveVar(LineValues[0], FromList(" ".join(SplitLine)))
-        if LineValues[2] in varmem:
-            SplitLine = Line.split(sep=None)
-            SplitLine.pop(0)
-            SplitLine.pop(0)
-            SaveVar(LineValues[0], FindVar(SplitLine[0]))
-        if LineValues[2] in inprogramfunctions:
-            SplitLine = Line.split(sep=None)
-            SplitLine.pop(0)
-            SplitLine.pop(0)
-            Ifunction(" ".join(SplitLine))
-            SaveVar(LineValues[0], FindVar(f"{SplitLine[0]}_return_val__"))
-    except IndexError:
-        print(f"SYNTAX ERROR: When creating variable \"{LineValues[0]}\" something went wrong")
-        sys.exit(1)
+    if LineValues[2] == "from_list":
+        SplitLine = Line.split(sep=None)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        SaveVar(LineValues[0], FromList(" ".join(SplitLine)))
+    if LineValues[2] in varmem:
+        SplitLine = Line.split(sep=None)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        SaveVar(LineValues[0], FindVar(SplitLine[0]))
+    if LineValues[2] in inprogramfunctions:
+        SplitLine = Line.split(sep=None)
+        SplitLine.pop(0)
+        SplitLine.pop(0)
+        Ifunction(" ".join(SplitLine))
+        SaveVar(LineValues[0], FindVar(f"{SplitLine[0]}_return_val__"))
+
 
 
 # this just makes it easier to determine what function to use
@@ -1447,6 +1473,10 @@ def IvoryFunctions(Line, function=None):
         SplitLine = Line.split(sep=None)
         SplitLine.pop(0)
         variable(" ".join(SplitLine))
+    elif function == "var:":
+        SplitLine = Line.split(sep=None)
+        SplitLine.pop(0)
+        #typevar(" ".join(SplitLine))
     elif function == "save_file":
         save_file(Line)
     elif function == "load_file":
@@ -1468,6 +1498,7 @@ def NewFunctions(Line, function=None):
         Iwhiletrue(Line)
     elif function == "while":
         Iwhile(Line)
+    
 
 
 
@@ -1507,7 +1538,12 @@ def execute(Content):
     variable("** = \" ** \"")
     variable("% = \" % \"")
     variable("// = \" // \"")
+    variable("= = \" = \"")
+    SaveVar("BLANK", "")
+    SaveVar("SPACE", " ")
+    MakeProcess("ifval", "true")
     for Line in Content:
+        sequenceval[0] = "notactive"
         linenum = Linenum[0]
         linenum += 1
         Linenum[0] = linenum
@@ -1518,6 +1554,8 @@ def execute(Content):
             SplitLine.pop(0)
             variable(" ".join(SplitLine))
 
+
+      
 
         if Line.startswith("import"):
             Iimport(Line)
@@ -1606,6 +1644,7 @@ def execute(Content):
                             sys.exit(1)
                     for d in range(Content.index(Line) + 1, Content.index(filecopy[endofseq - 1]) + 1):
                         Content.pop(Content.index(Line) + 1)
+                        Linenum[0] += 1
                     for fd in range(endofseq, len(filecopy)):
                         filecopy.pop(endofseq)
                     filecopylist = []
