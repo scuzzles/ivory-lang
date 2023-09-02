@@ -1,3 +1,4 @@
+
 function open [ open_file_path__ method__ ] var new_return__ = py open(FindVar("open_file_path__"), FindVar("method__")) ; return new_return__ ;
 $ opens a file to be used
 $ open " file.txt " " r "
@@ -84,3 +85,24 @@ if op__ == // {{ var RESULT__ = py float(FindVar("NUM1__")) // float(FindVar("nu
 function math [ NUM1__ op__ num2__ ] sequence.use math_seq_int ; return RESULT__ ;
 
 function math_float [ NUM1__ op__ num2__ ] sequence.use math_seq_float ; return RESULT__ ;
+function int [ number__ ] var RESULT__ = py int(FindVar("number__")) ; return RESULT__ ;
+function str [ string__ ] var RESULT__ = py str(FindVar("string__")) ; return RESULT__ ;
+function float [ float__ ] var RESULT__ = py str(FindVar("float__")) ; return RESULT__ ;
+
+function range [ begin__ end__ ] var result__ = py Irange(FindVar("begin__"), FindVar("end__")) ; return result__ ;
+
+function table_append [ appendvar__ newcontent__ ] py FindVar("appendvar__").append(FindVar("newcontent__")) ; 
+
+function table_value [ table__ requestedValue__ ] var returning__ = py FindVar("table__")[int(FindVar("requestedValue__"))] ; return returning__ ;
+
+function table_remove [ appendvar__ contentindexval__ ] py FindVar("appendvar__").pop(int(FindVar("contentindexval__"))) ;
+
+function table_index [ listvar__ listvalue__ ] var foundindex__ = py FindVar("listvar__").index(FindVar("listvalue__")) ; return foundindex__ ;
+
+function split [ stringvar__ ] var thenewlist__ = py FindVar("stringvar__").split(sep=None) ; return thenewlist__ ;
+
+concat [ joininglist__ seperator__ ] var theval__ = py FindVar("seperator__").join(FindVar("joininglist__")) ; return theval__ ;
+
+function table_copy [ table__ ] var newtable__ = py list(FindVar("table__")) ; return newtable__ ;
+
+function table_changeval [ table__ location__ newval__ ] py changeval() ;
