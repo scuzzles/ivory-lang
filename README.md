@@ -1,6 +1,16 @@
 # A Short Summary
 Ivory is a unique programming language made in part with the intent of making programming less complicated, some things are very odd because ivory is not made traditionally but if you take the time to learn it, so long as you have an understanding of python you should find that almost anything is possible with the combination of the two
 
+## Using Ivory
+One of the ways that you can run your Ivory program is to use the run command. Here is an example:
+```
+py ivory.py run main.iv
+```
+This will run a file named "main.iv" but if you wanted to run it in linux it would look like this:
+```
+python3 ivory.py run main.iv
+```
+
 ## Using a Function
 in ivory, there is no need for parenthesis; for example, here is how you would run hello world
 
