@@ -103,6 +103,7 @@ RESULT:
 If you've ever written in an other programming language at all you probably have one question. "Why are the strings added together?"
 This is because in Ivory there are really no types, strings and numbers are not different from each other, the only difference is between float numbers and int numbers.
 When you use the math function ivory will just try to add the two strings as integers and if it doesn't work it will raise an error. Here are some more math examples:
+Example 1:
 ```
 var result = math " 124 " - " 43 "
 print result
@@ -111,6 +112,7 @@ RESULT:
 ```
 81
 ```
+Example 2:
 ```
 var result = math " 10 " * " 4 "
 print result
@@ -119,6 +121,7 @@ RESULT:
 ```
 40
 ```
+Example 3:
 ```
 var result = math_float " 10 " * " 3.4 "
 print result
