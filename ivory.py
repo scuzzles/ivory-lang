@@ -2,11 +2,16 @@ import pickle
 import sys
 import random
 import socket
-import Ivory_imports as i
+from importlib import import_module
+global i
+i = import_module("Ivory_imports")
+ivoryImports = [i]
 Linenum = [0]
 currentfunc = [0]
 currentseq = [0]
 activefunc = [0]
+import time
+Version = ["1.9.4"]
 lockedfunc = [0]
 sequenceval = ["notactive"]
 memory = []
@@ -19,9 +24,7 @@ processmem = []
 processdata = []
 inprogramsequences = []
 sequencesmem = []
-filename = input("enter the name of your file here:")
-print("")
-Content = open(f"{filename}.iv", "r").readlines()
+
 forvalue = []
 
 def FindVar(var):
@@ -98,7 +101,17 @@ def Ithread():
 # IVORY FUNCTIONS
 
 
-
+def py_import(module):
+    check = open("Ivory_imports.py", "r").readlines()
+    if f"import {module}\n" in check or f"import {module}" in check:
+        pass
+    else:
+        
+        file = open("Ivory_imports.py", "a+")
+        file.write(f"import {module}\n")
+        file.close()
+        time.sleep(1)
+        ivoryImports[0] = import_module("Ivory_imports")
 
 def Ibreak():
     forvalue.append("notactive")
@@ -1417,14 +1430,20 @@ def variable(Line):
             SaveVar(varName, loadedfile)
 
     if LineValues[2] == "py":
-        
-        SplitLine = Line.split(sep=None)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-        SplitLine.pop(0)
-
-        SaveVar(LineValues[0], eval(" ".join(SplitLine)))
-        
+        try:
+            SplitLine = Line.split(sep=None)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SplitLine.pop(0)
+            SaveVar(LineValues[0], eval(" ".join(SplitLine)))
+        except Exception as E:
+            print(f"PYTHON ERROR: {E}")
+            print(f"ERROR LINE: {Line}")
+            print(f"Line Number: {Linenum[0]}")
+            if sequenceval[0] == "active":
+                if currentseq[0] != 0:
+                    print(f"ERROR OCCURED IN SEQUENCE: \"{currentseq[0]}\"")
+            sys.exit(1)    
         
 
     if LineValues[2] == "list":
@@ -1527,7 +1546,6 @@ def NewFunctions(Line, function=None):
 # interpreter
 # interpreter
 
-# this executes a .iv file using all of the functions above
 def execute(Content):
     
     Iimport("import iv_built-in")
@@ -1541,8 +1559,11 @@ def execute(Content):
     variable("= = \" = \"")
     SaveVar("BLANK", "")
     SaveVar("SPACE", " ")
+    SaveVar("VERSION", Version[0])
+    SaveVar("THE_TRUTH", "Alli is the most beautiful girl in the entire world and I love her so so so so so so so so much and I always will. This is the truth in my heart")
     MakeProcess("ifval", "true")
     for Line in Content:
+        i = ivoryImports[0]
         sequenceval[0] = "notactive"
         linenum = Linenum[0]
         linenum += 1
@@ -1690,4 +1711,21 @@ def execute(Content):
         if Line.startswith("print_line"):
             print(Content[int(LineValues[1]) - 1])
 
-execute(Content)
+
+if __name__ == '__main__':
+  args = sys.argv[1:]
+  if args:
+    if args[0] == "run":
+        filename = args[1]
+        Content = open(filename, "r").readlines()
+        execute(Content)
+    if args[0] == "version":
+        print(Version[0])
+    if args[0] == "ver":
+        print(Version[0])
+  else:
+    filename = input("enter the name of your file here:")
+    print("")
+    Content = open(f"{filename}.iv", "r").readlines()
+    execute(Content)
+
