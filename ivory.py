@@ -3,6 +3,7 @@ import sys
 import random
 import socket
 from importlib import import_module
+import time
 global i
 i = import_module("Ivory_imports")
 ivoryImports = [i]
@@ -10,7 +11,6 @@ Linenum = [0]
 currentfunc = [0]
 currentseq = [0]
 activefunc = [0]
-import time
 Version = ["1.9.4"]
 lockedfunc = [0]
 sequenceval = ["notactive"]
@@ -894,10 +894,10 @@ def Iif(Line):
             SplitLine.pop(0)
             SplitLine.pop(0)
             indexval = -1
-            for x in SplitLine:
+            for x in NewLine:
                 indexval += 1
                 if x == '\\"':
-                    SplitLine[indexval] = "\""
+                    NewLine[indexval] = "\""
             checkedvar = " ".join(NewLine)
 
             if str(FindVar(LineValues[1])) == str(checkedvar):
