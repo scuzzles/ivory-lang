@@ -101,7 +101,7 @@ function table_index [ listvar__ listvalue__ ] var foundindex__ = py FindVar("li
 
 function split [ stringvar__ ] var thenewlist__ = py FindVar("stringvar__").split(sep=None) ; return thenewlist__ ;
 
-concat [ joininglist__ seperator__ ] var theval__ = py FindVar("seperator__").join(FindVar("joininglist__")) ; return theval__ ;
+function concat [ joininglist__ seperator__ ] var theval__ = py FindVar("seperator__").join(FindVar("joininglist__")) ; return theval__ ;
 
 function table_copy [ table__ ] var newtable__ = py list(FindVar("table__")) ; return newtable__ ;
 
