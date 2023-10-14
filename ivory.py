@@ -1,4 +1,5 @@
 import pickle
+from http.server import HTTPServer, BaseHTTPRequestHandler
 import sys
 import random
 import socket
@@ -358,6 +359,18 @@ def load_file(Line):
         thevar = FindVar(SplitLine[0])
         loadedfile = pickle.load(open(thevar, "rb"))
         memory.append(loadedfile)
+
+def IimportAll(module):
+    try:
+        ImportContent = open(f"{module}.iv", "r").readlines()
+    except FileNotFoundError:
+        try:
+            ImportContent = open(f"modules/{module}.iv", "r").readlines()
+        except FileNotFoundError:
+            linenum = Content.index(Line) + 1
+            print(f"ERROR IN LINE({linenum}): IMPORT ERROR | Could not find module \"{LineValues[1]}\"")
+            sys.exit(1)
+    execute(ImportContent)
 
 
 # imports a function from a module
@@ -1538,6 +1551,28 @@ def NewFunctions(Line, function=None):
         Ibreak()
 
 
+def Imakeserv(pages, pageData):
+    global Serv
+    class Serv(BaseHTTPRequestHandler):
+
+        def do_GET(self):
+            if self.path in pages:
+                loc = pages.index(self.path)
+                theseq = FindVar(f"{self.path}_onrequest")
+                evaluate(f"sequence.use {theseq}")
+                data = pageData[loc] 
+            try:
+                file_to_open = data
+                self.send_response(200)
+            except:
+                file_to_open = "404 page not found"
+                self.send_response(404)
+            self.end_headers()
+            self.wfile.write(bytes(file_to_open, 'utf-8'))
+
+def Irunserv(port):
+    httpd = HTTPServer(('localhost', port), Serv)
+    httpd.serve_forever()
 # interpreter
 # interpreter
 # interpreter
@@ -1602,6 +1637,8 @@ def execute(Content):
             pass
         elif LineValues[0] == "from":
             Iimportfrom(Line)
+        elif LineValues[0] == "*import":
+            IimportAll(LineValues[1])
         #elif LineValues[0] in functions:
         #    IvoryFunctions(Line, LineValues[0])
         elif LineValues[0] in newerFunctions:

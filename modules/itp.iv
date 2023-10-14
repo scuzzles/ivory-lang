@@ -1,0 +1,20 @@
+
+
+
+function init [ port ] var pages = list [ ] ; var pagedata = list [ ] ;
+
+sequence make_pageold {
+var loc = table_index pages pagename
+table_changeval pagedata loc data
+}
+
+
+sequence make_pagenew {
+table_append pages pagename 
+table_append pagedata data 
+}
+
+
+function make_page [ pagename sequenceName data ] if pages includes pagename {{ sequence.use make_pageold }} ; else {{ sequence.use make_pagenew }} ; py SaveVar(f"{FindVar('pagename')}_onrequest", FindVar("sequenceName")) ;   
+
+function run_server [ nothingatall ] py Imakeserv(FindVar("pages"), FindVar("pagedata")) ; py Irunserv(int(FindVar("port"))) ;
