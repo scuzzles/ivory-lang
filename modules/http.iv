@@ -1,16 +1,15 @@
-
-
-
 function init [ port ] var pages = list [ ] ; var pagedata = list [ ] ;
 
 sequence make_pageold {
 var loc = table_index pages pagename
+var data = str data
 table_changeval pagedata loc data
 }
 
 
 sequence make_pagenew {
 table_append pages pagename 
+var data = str data
 table_append pagedata data 
 }
 
