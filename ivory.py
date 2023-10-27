@@ -12,7 +12,7 @@ Linenum = [0]
 currentfunc = [0]
 currentseq = [0]
 activefunc = [0]
-Version = ["1.9.5"]
+Version = ["1.9.6"]
 lockedfunc = [0]
 sequenceval = ["notactive"]
 memory = []
@@ -25,7 +25,7 @@ processmem = []
 processdata = []
 inprogramsequences = []
 sequencesmem = []
-
+importing = [False]
 forvalue = []
 
 def FindVar(var):
@@ -367,10 +367,11 @@ def IimportAll(module):
         try:
             ImportContent = open(f"modules/{module}.iv", "r").readlines()
         except FileNotFoundError:
-            linenum = Content.index(Line) + 1
-            print(f"ERROR IN LINE({linenum}): IMPORT ERROR | Could not find module \"{LineValues[1]}\"")
+            print(f"ERROR IN LINE({Linenum[0]}): IMPORT ERROR | Could not find module \"{module}\"")
             sys.exit(1)
+    importing[0] = True
     execute(ImportContent)
+    importing[0] = False
 
 
 # imports a function from a module
@@ -1601,7 +1602,10 @@ def execute(Content):
         i = ivoryImports[0]
         sequenceval[0] = "notactive"
         linenum = Linenum[0]
-        linenum += 1
+        if importing[0]:
+            pass
+        if not importing[0]:
+            linenum += 1
         Linenum[0] = linenum
         LineValues = Line.split(sep=None)
         # IDENTIFYING VARIABLES
@@ -1765,4 +1769,3 @@ if __name__ == '__main__':
     print("")
     Content = open(f"{filename}.iv", "r").readlines()
     execute(Content)
-
