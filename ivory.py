@@ -799,7 +799,7 @@ def Iwhile(Line):
 
     if "<" in LineValues:
         SplitLine = Line.split(sep=None)
-        var1 = FindVar(LineValues[1])
+        var1 = float(FindVar(LineValues[1]))
 
         SplitLine.pop(0)
         SplitLine.pop(0)
@@ -810,9 +810,11 @@ def Iwhile(Line):
             endofline = len(SplitLine)
             for x in range(endofval, endofline):
                 SplitLine.pop(endofval)
-            var2 = " ".join(SplitLine)
+            var2 = float(" ".join(SplitLine))
+            MakeProcess("typevar2", "string")
         else:
-            var2 = FindVar(LineValues[3])
+            var2 = float(FindVar(LineValues[3]))
+            MakeProcess("typevar2", "var")
             
         useableLine = Line.split(sep=None)
         LineStartVal = useableLine.index("sequence.use")
@@ -821,9 +823,11 @@ def Iwhile(Line):
 
         
         while var1 < var2:
+            typevar2 = LoadProcess("typevar2")
             Sequence(" ".join(useableLine))
             var1 = float(FindVar(LineValues[1]))
-            var2 = float(FindVar(LineValues[3]))
+            if typevar2 == "var":
+                var2 = float(FindVar(LineValues[3]))
     
 
 # allows you to add variables to the middle of a string

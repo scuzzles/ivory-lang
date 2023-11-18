@@ -100,7 +100,7 @@ RESULT:
 ```
 3
 ```
-If you've ever written in an other programming language at all you probably have one question. "Why are the strings added together?"
+If you've ever written in any other programming language at all you probably have one question. "Why are the strings added together?"
 This is because in Ivory there are really no types, strings and numbers are not different from each other, the only difference is between float numbers and int numbers.
 When you use the math function ivory will just try to add the two strings as integers and if it doesn't work it will raise an error. Here are some more math examples:
 **Example 1:**
@@ -178,11 +178,74 @@ each entered parameter will be added to the list under the variable name "..." a
 each item in the list
 
 
+## Loops
 
+### While Loops
+In programming it is essential to be able to write loops. One of the best loops in programming is the while loop, 
+here is an example of a simple while loop in Ivory: 
+```
+var list = table { " this is a value " " this is another value " " this is the third value " " this value is labeled 3 " " this is the last value " }
+var pointer = " 0 "
+var continue == " do "
+var currentval = table_value list pointer
 
+sequence main {
+if currentval == " this value is labeled 3 " {{ var continue = " dont " }}  
+print v" %{ pointer } : %{ currentval } " 
+var pointer = math pointer + " 1 "
+var currentval = table_value list pointer
+}
 
+while continue == " do " {{ sequence.use main }}
+```
+RESULT:
+```
+0 : this is a value
+1 : this is another value
+2 : this is the third value
+3 : this value is labeled 3
+```
+Here is a much more simple example on how to use a while loop:
+```
+var num = " 0 " 
+sequence main {
+print num 
+var num = math num + " 1 "
+}
+while num < " 10 " {{ sequence.use main }}
+```
+RESULT:
+```
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+```
 
-
+### For Loops
+One of the most important parts of programming is the for loop, it makes it very easy to loop through something a specific amount of times, the method in Ivory is inspired by 
+languages like python and ruby. Here is an example of a for loop in Ivory.
+```
+var range = range " 0 " " 5 "
+print range
+for x in range {{ print x }}
+```
+RESULT:
+```
+[0, 1, 2, 3, 4]
+0
+1
+2
+3
+4
+```
+The range function makes a list of all numbers in the range listed and a for loop iterates through every value in the list provided.
 
 
 ## Modules 
