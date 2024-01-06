@@ -12,7 +12,7 @@ Linenum = [0]
 currentfunc = [0]
 currentseq = [0]
 activefunc = [0]
-Version = ["1.9.7"]
+Version = ["1.9.8"]
 lockedfunc = [0]
 sequenceval = ["notactive"]
 memory = []
@@ -54,6 +54,7 @@ def SaveVar(varname, varvalue):
         varmem.append(varname)
         memory.append(varvalue)
 
+# processes were originally made to copy lists even though you can just use list(), now it's just a weird way to easily make a fully global variable
 def MakeProcess(name, var):
   var = list(var)
   if name in processmem:
@@ -1574,6 +1575,12 @@ def Imakeserv(pages, pageData):
                 self.send_response(404)
             self.end_headers()
             self.wfile.write(bytes(file_to_open, 'utf-8'))
+
+        def do_POST(self):
+            content_length = int(self.headers['Content-Length']) 
+            post_data = self.rfile.read(content_length) 
+            print("POST request", post_data.decode('utf-8'))
+            print("POST request for {}".format(self.path))
 
 def Irunserv(port):
     httpd = HTTPServer(('localhost', port), Serv)
